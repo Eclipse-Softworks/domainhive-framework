@@ -1,6 +1,3 @@
-Below is a detailed README.md file for the **DomainHive Framework** project, now officially associated with Eclipse Softworks (ES):
-
-```markdown
 # DomainHive Framework
 
 ![DomainHive Logo]
