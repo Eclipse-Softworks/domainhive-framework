@@ -4,7 +4,7 @@ Below is a detailed README.md file for the **DomainHive Framework** project, now
 # DomainHive Framework
 
 ![DomainHive Logo]
-![1](https://github.com/user-attachments/assets/eee63fea-f1d7-4a4f-90e5-c1cd6fc96164)
+(https://github.com/user-attachments/assets/eee63fea-f1d7-4a4f-90e5-c1cd6fc96164)
 
 
 **DomainHive Framework** is an open-source, domain-specific framework designed to empower developers with a plug-and-play, modular architecture for niche markets such as IoT, mobile development, and microservices. Developed and maintained by **Eclipse Softworks (ES)**, DomainHive Framework simplifies rapid prototyping, integration, and scalable application development by providing robust APIs, reusable components, and comprehensive documentation.
