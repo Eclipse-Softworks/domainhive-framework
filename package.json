@@ -1,0 +1,31 @@
+{
+  "name": "domainhive-framework",
+  "version": "1.0.0",
+  "description": "Domain-specific framework for IoT and microservices integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/examples/usage.js",
+    "dev": "ts-node src/examples/usage.ts",
+    "test": "jest",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "iot",
+    "microservices",
+    "framework"
+  ],
+  "author": "Eclipse Softworks",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/mosca": "^2.8.8",
+    "@types/mqtt": "^0.0.34",
+    "@types/node": "^22.13.9",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "aedes": "^0.51.3",
+    "mqtt": "^5.10.4"
+  }
+}
