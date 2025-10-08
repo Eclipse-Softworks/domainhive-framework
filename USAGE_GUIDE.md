@@ -16,6 +16,12 @@ logger.info('Application started!');
 ## Table of Contents
 
 - [Core Framework](#core-framework)
+- [REST API Server](#rest-api-server)
+- [GraphQL Server](#graphql-server)
+- [gRPC Server](#grpc-server)
+- [WebSocket Server](#websocket-server)
+- [Database Module](#database-module)
+- [Cache Module](#cache-module)
 - [Authentication](#authentication)
 - [Logging](#logging)
 - [Data Validation](#data-validation)
@@ -54,6 +60,245 @@ hive.registerModule('myModule', new MyModule());
 
 // Get modules
 const myModule = hive.getModule<MyModule>('myModule');
+```
+
+---
+
+## REST API Server
+
+Build RESTful APIs with Express.
+
+```typescript
+import { RESTModule } from 'domainhive-framework';
+
+const rest = new RESTModule({
+  port: 3000,
+  cors: { origin: '*' },
+  rateLimit: { windowMs: 15 * 60 * 1000, max: 100 }
+});
+
+rest.addRoute({
+  method: 'GET',
+  path: '/api/users',
+  handler: async (req, res) => {
+    res.json({ users: [] });
+  }
+});
+
+rest.addRoute({
+  method: 'POST',
+  path: '/api/users',
+  handler: async (req, res) => {
+    const user = req.body;
+    res.status(201).json({ user });
+  }
+});
+
+const router = rest.createRouter({ prefix: '/api/v1' });
+router.get('/health', (req, res) => res.json({ status: 'ok' }));
+router.post('/data', (req, res) => res.json({ received: req.body }));
+
+await rest.start();
+console.log('REST API server running on port 3000');
+```
+
+---
+
+## GraphQL Server
+
+Create GraphQL APIs with schemas and resolvers.
+
+```typescript
+import { GraphQLModule, RESTModule } from 'domainhive-framework';
+import { GraphQLObjectType, GraphQLString, GraphQLInt } from 'graphql';
+
+const graphql = new GraphQLModule({ graphiql: true });
+
+const UserType = graphql.addType({
+  name: 'User',
+  fields: {
+    id: { type: GraphQLString },
+    name: { type: GraphQLString },
+    email: { type: GraphQLString }
+  }
+});
+
+graphql.addQuery('user', {
+  type: UserType,
+  args: { id: { type: GraphQLString } },
+  resolve: async (parent, args) => {
+    return { id: args.id, name: 'John Doe', email: 'john@example.com' };
+  }
+});
+
+graphql.addMutation('createUser', {
+  type: UserType,
+  args: {
+    name: { type: GraphQLString },
+    email: { type: GraphQLString }
+  },
+  resolve: async (parent, args) => {
+    return { id: '123', ...args };
+  }
+});
+
+const rest = new RESTModule({ port: 4000 });
+rest.useAt('/graphql', graphql.getMiddleware());
+await rest.start();
+console.log('GraphQL server running on port 4000/graphql');
+```
+
+---
+
+## gRPC Server
+
+High-performance RPC with protocol buffers.
+
+```typescript
+import { GRPCModule } from 'domainhive-framework';
+import * as grpc from '@grpc/grpc-js';
+
+const grpcServer = new GRPCModule({
+  port: 50051,
+  protoFiles: ['./protos/service.proto']
+});
+
+const serviceImplementation = {
+  sayHello: (call, callback) => {
+    callback(null, { message: `Hello ${call.request.name}` });
+  },
+  listUsers: (call, callback) => {
+    const users = [
+      { id: '1', name: 'Alice' },
+      { id: '2', name: 'Bob' }
+    ];
+    callback(null, { users });
+  }
+};
+
+const packageDef = grpcServer.getPackageDefinition('./protos/service.proto');
+grpcServer.addService(
+  'UserService',
+  packageDef.UserService.service,
+  serviceImplementation
+);
+
+await grpcServer.start();
+console.log('gRPC server running on port 50051');
+```
+
+---
+
+## WebSocket Server
+
+Real-time bidirectional communication.
+
+```typescript
+import { WebSocketModule } from 'domainhive-framework';
+
+const ws = new WebSocketModule({
+  port: 8080,
+  path: '/ws'
+});
+
+ws.on('connection', ({ connectionId, info }) => {
+  console.log(`Client connected: ${connectionId}`);
+  ws.send(connectionId, {
+    type: 'welcome',
+    data: { message: 'Connected to WebSocket server' }
+  });
+});
+
+ws.onMessage('chat', (data, connectionId) => {
+  console.log(`Message from ${connectionId}:`, data);
+  ws.broadcast({
+    type: 'chat',
+    data: { message: data.message, from: connectionId }
+  }, connectionId);
+});
+
+ws.on('disconnection', ({ connectionId }) => {
+  console.log(`Client disconnected: ${connectionId}`);
+});
+
+await ws.start();
+console.log('WebSocket server running on port 8080');
+```
+
+---
+
+## Database Module
+
+Connect to PostgreSQL, MongoDB, or MySQL.
+
+```typescript
+import { DatabaseModule } from 'domainhive-framework';
+
+const db = new DatabaseModule({
+  type: 'postgresql',
+  host: 'localhost',
+  port: 5432,
+  database: 'myapp',
+  username: 'user',
+  password: 'password',
+  poolSize: 10
+});
+
+await db.connect();
+console.log('Database connected');
+
+const result = await db.query('SELECT * FROM users WHERE id = $1', ['123']);
+console.log('Users:', result.rows);
+
+const mongoDb = new DatabaseModule({
+  type: 'mongodb',
+  connectionString: 'mongodb://localhost:27017/myapp'
+});
+
+await mongoDb.connect();
+const collection = mongoDb.getCollection('users');
+const users = await collection.find({}).toArray();
+console.log('MongoDB users:', users);
+
+await db.disconnect();
+```
+
+---
+
+## Cache Module
+
+Redis or in-memory caching.
+
+```typescript
+import { CacheModule } from 'domainhive-framework';
+
+const cache = new CacheModule({
+  type: 'memory'
+});
+
+await cache.connect();
+
+await cache.set('user:123', { name: 'John', email: 'john@example.com' }, 3600);
+
+const user = await cache.get('user:123');
+console.log('Cached user:', user);
+
+const hasUser = await cache.has('user:123');
+console.log('User exists:', hasUser);
+
+await cache.delete('user:123');
+
+const redisCache = new CacheModule({
+  type: 'redis',
+  redis: {
+    host: 'localhost',
+    port: 6379,
+    keyPrefix: 'app:'
+  }
+});
+
+await redisCache.connect();
+await redisCache.set('session:abc', { userId: '123' }, 1800);
 ```
 
 ---

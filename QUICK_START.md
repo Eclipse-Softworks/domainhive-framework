@@ -31,24 +31,98 @@ logger.info('Hello from DomainHive!');
 
 ## Common Use Cases
 
-### 1. User Authentication
+### 1. REST API Server
+
+```typescript
+import { RESTModule } from 'domainhive-framework';
+
+const rest = new RESTModule({ port: 3000 });
+
+rest.addRoute({
+  method: 'GET',
+  path: '/api/hello',
+  handler: (req, res) => res.json({ message: 'Hello World' })
+});
+
+await rest.start();
+```
+
+### 2. GraphQL API
+
+```typescript
+import { GraphQLModule, RESTModule } from 'domainhive-framework';
+import { GraphQLString } from 'graphql';
+
+const graphql = new GraphQLModule();
+
+graphql.addQuery('hello', {
+  type: GraphQLString,
+  resolve: () => 'Hello from GraphQL'
+});
+
+const rest = new RESTModule({ port: 4000 });
+rest.useAt('/graphql', graphql.getMiddleware());
+await rest.start();
+```
+
+### 3. WebSocket Server
+
+```typescript
+import { WebSocketModule } from 'domainhive-framework';
+
+const ws = new WebSocketModule({ port: 8080 });
+
+ws.onMessage('chat', (data, connectionId) => {
+  ws.broadcast({ type: 'chat', data });
+});
+
+await ws.start();
+```
+
+### 4. Database Connection
+
+```typescript
+import { DatabaseModule } from 'domainhive-framework';
+
+const db = new DatabaseModule({
+  type: 'postgresql',
+  host: 'localhost',
+  database: 'myapp',
+  username: 'user',
+  password: 'password'
+});
+
+await db.connect();
+const result = await db.query('SELECT * FROM users');
+```
+
+### 5. Caching
+
+```typescript
+import { CacheModule } from 'domainhive-framework';
+
+const cache = new CacheModule({ type: 'memory' });
+await cache.connect();
+
+await cache.set('key', { data: 'value' }, 3600);
+const value = await cache.get('key');
+```
+
+### 6. User Authentication
 
 ```typescript
 import { AuthModule } from 'domainhive-framework';
 
 const auth = new AuthModule({ secretKey: 'your-secret' });
 
-// Register
 await auth.register('username', 'email@example.com', 'password');
 
-// Login
 const { token } = await auth.login('username', 'password');
 
-// Verify
 const user = await auth.verifyAuth(token);
 ```
 
-### 2. Data Validation
+### 7. Data Validation
 
 ```typescript
 import { Validator } from 'domainhive-framework';
@@ -59,10 +133,10 @@ const validator = new Validator({
 });
 
 const result = validator.validate({ email: 'test@example.com', age: 25 });
-console.log(result.valid); // true
+console.log(result.valid);
 ```
 
-### 3. HTTP Requests
+### 8. HTTP Requests
 
 ```typescript
 import { httpClient } from 'domainhive-framework';
@@ -74,7 +148,7 @@ const response = await httpClient.get('https://api.example.com/data');
 await httpClient.post('https://api.example.com/data', { name: 'John' });
 ```
 
-### 4. Logging
+### 9. Logging
 
 ```typescript
 import { logger } from 'domainhive-framework';
@@ -85,7 +159,7 @@ logger.warn('Warning message');
 logger.error('Error message', { details: 'error info' });
 ```
 
-### 5. Utility Helpers
+### 10. Utility Helpers
 
 ```typescript
 import { uuid, sleep, retry } from 'domainhive-framework';
