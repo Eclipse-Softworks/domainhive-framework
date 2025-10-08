@@ -26,46 +26,127 @@
 
 ## Overview
 
-DomainHive Framework is designed to be a flexible, plug-and-play solution that accelerates the development of domain-specific applications. It offers:
+DomainHive Framework is a comprehensive, enterprise-ready backend framework designed to empower developers and corporations to build scalable applications efficiently. It provides a complete suite of backend capabilities including REST APIs, GraphQL, gRPC, real-time WebSocket communication, database connectivity, caching, and more. The framework is built with TypeScript for type safety and follows industry best practices.
 
-- **Robust APIs:** Easily integrate with external systems using well-documented RESTful and GraphQL APIs.
-- **Modular Components:** Independent, reusable modules that can be configured or replaced as needed.
-- **Comprehensive Documentation:** Step-by-step guides, example projects, and a detailed wiki to help you get started quickly.
-- **Plug-and-Play Architecture:** A core framework that minimizes boilerplate code and allows rapid prototyping and scaling.
+Key highlights:
+- **Complete Backend Solution:** Everything needed to build production-ready backend systems
+- **Multi-Protocol Support:** REST, GraphQL, gRPC, WebSocket, and MQTT protocols
+- **Database Agnostic:** Support for PostgreSQL, MongoDB, and MySQL
+- **Built for Scale:** Caching, rate limiting, security middleware, and optimized performance
+- **Developer Friendly:** Clean APIs, comprehensive documentation, and TypeScript support
+- **Enterprise Ready:** Suitable for startups to large corporations building mission-critical applications
 
-By leveraging DomainHive Framework, teams can reduce time-to-market, maintain high code quality, and foster a community-driven ecosystem.
+By leveraging DomainHive Framework, teams can reduce development time, maintain high code quality, and build robust backend systems without reinventing the wheel.
 
 ---
 
 ## Key Features
 
-- **Robust API Layer:** 
-  - Built-in support for RESTful and GraphQL endpoints.
-  - Seamless integration with third-party services.
+### API & Communication Protocols
 
-- **Modular & Extensible:**
-  - Each module (authentication, logging, data processing, etc.) is self-contained with clear interfaces.
-  - Easily add, remove, or update modules without impacting the overall system.
+- **REST API Server**
+  - Express-based HTTP server with routing and middleware
+  - Built-in CORS, helmet security, and rate limiting
+  - Request logging and monitoring
+  - Support for all HTTP methods (GET, POST, PUT, DELETE, PATCH)
 
-- **Everyday Developer Tools:**
-  - Authentication & Authorization with role-based access control
-  - Structured logging with file rotation and multiple levels
-  - Data validation with custom rules and schemas
-  - HTTP client with retry logic and authentication support
-  - Common utilities (UUID generation, retry with backoff, debounce, throttle, etc.)
-  - Custom error types for better error handling
+- **GraphQL Server**
+  - Schema definition and type system
+  - Query and mutation support
+  - GraphiQL interface for development
+  - Type-safe resolvers
 
-- **Comprehensive Documentation:**
-  - Detailed usage guides and API references.
-  - Example projects in the `examples/` folder to demonstrate real-world applications.
+- **gRPC Server**
+  - Protocol buffer support
+  - Bidirectional streaming
+  - High-performance RPC communication
+  - Service definition and implementation
 
-- **Scalable Architecture:**
-  - Designed for high scalability with continuous integration and delivery.
-  - Compatible with containerized environments (Docker, Kubernetes).
+- **WebSocket Server**
+  - Real-time bidirectional communication
+  - Event-based messaging system
+  - Connection management and tracking
+  - Broadcast and targeted messaging
 
-- **Community Focus:**
-  - Open contribution model with clear guidelines and active issue tracking.
-  - Encourages collaboration and shared improvements.
+- **MQTT Protocol**
+  - IoT device communication
+  - Embedded MQTT broker
+  - Publish/subscribe messaging
+
+### Data Management
+
+- **Database Module**
+  - PostgreSQL support with connection pooling
+  - MongoDB support with native driver
+  - MySQL support with connection pooling
+  - Unified query interface
+  - Transaction support
+
+- **Cache Module**
+  - Redis integration for distributed caching
+  - In-memory caching for simple use cases
+  - TTL (Time-To-Live) support
+  - Automatic cleanup and eviction
+
+### Security & Authentication
+
+- **Authentication Module**
+  - JWT-like token-based authentication
+  - User registration and login
+  - Role-based access control (RBAC)
+  - Password hashing with SHA-256
+  - Token expiration and refresh
+
+- **Security Middleware**
+  - Helmet.js security headers
+  - CORS configuration
+  - Rate limiting to prevent abuse
+  - Request validation
+
+### Developer Experience
+
+- **Logging Module**
+  - Structured logging with multiple levels
+  - File rotation and console output
+  - Context-aware logging
+  - Performance tracking
+
+- **Validation Module**
+  - Schema-based data validation
+  - Custom validation rules
+  - Type checking and pattern matching
+  - Detailed error reporting
+
+- **HTTP Client**
+  - Promise-based API
+  - Retry logic with exponential backoff
+  - Authentication support
+  - Request/response interceptors
+
+- **Utility Helpers**
+  - UUID generation
+  - Deep cloning and object manipulation
+  - Debounce and throttle functions
+  - Async retry with backoff
+  - Custom error types
+
+### Architecture & Scalability
+
+- **Modular Design**
+  - Independent, self-contained modules
+  - Clean interfaces and dependency injection
+  - Easy to extend and customize
+
+- **Production Ready**
+  - TypeScript for type safety
+  - Error handling and recovery
+  - Connection pooling and resource management
+  - Performance optimized
+
+- **Microservices Support**
+  - Service registry and discovery
+  - Multiple communication protocols
+  - Distributed system patterns
 
 ---
 
@@ -125,19 +206,29 @@ This design enables independent development, testing, and deployment of each mod
 
 ```
 domainhive-framework/
-├── docs/                 # Documentation, architecture diagrams, and guides
-├── examples/             # Example projects demonstrating framework usage
 ├── src/
-│   ├── core/             # Core API and configuration modules
-│   ├── modules/          # Independent, reusable modules (e.g., authentication, logging)
-│   └── utils/            # Utility functions and helpers
-├── tests/                # Unit and integration tests
-├── .github/
-│   ├── workflows/        # CI/CD configurations (GitHub Actions)
-│   └── ISSUE_TEMPLATE.md # Issue template for bug reports and feature requests
-├── README.md             # This file
-├── CONTRIBUTING.md       # Guidelines for contributing
-└── LICENSE               # Project license (MIT, Apache, etc.)
+│   ├── core/                # Core framework (DomainHive singleton)
+│   ├── modules/             # Feature modules
+│   │   ├── REST/            # REST API server with Express
+│   │   ├── GraphQL/         # GraphQL server with schema support
+│   │   ├── gRPC/            # gRPC server with protocol buffers
+│   │   ├── WebSocket/       # WebSocket server for real-time
+│   │   ├── Database/        # Database connectors (PostgreSQL, MongoDB, MySQL)
+│   │   ├── Cache/           # Caching (Redis, in-memory)
+│   │   ├── Auth/            # Authentication and authorization
+│   │   ├── Logging/         # Advanced logging with file support
+│   │   ├── IoT/             # IoT device management
+│   │   └── Microservices/   # Service registry and discovery
+│   ├── utils/               # Utility functions and helpers
+│   ├── interfaces/          # TypeScript interfaces
+│   ├── broker/              # MQTT broker
+│   └── examples/            # Example implementations
+├── dist/                    # Compiled JavaScript output
+├── README.md                # Project overview and setup
+├── FEATURES.md              # Detailed feature list
+├── USAGE_GUIDE.md           # Comprehensive usage documentation
+├── QUICK_START.md           # Quick start guide
+└── package.json             # Project dependencies and scripts
 ```
 
 ---
@@ -161,10 +252,16 @@ For comprehensive guides, see:
 
 ### Key Capabilities
 
-- **Authentication**: Secure user authentication with JWT-like tokens
+- **REST API Server**: Build RESTful APIs with Express, routing, and middleware
+- **GraphQL Server**: Create GraphQL APIs with schema and resolvers
+- **gRPC Server**: High-performance RPC with protocol buffers
+- **WebSocket Server**: Real-time bidirectional communication
+- **Database Support**: PostgreSQL, MongoDB, and MySQL connectors
+- **Caching**: Redis and in-memory caching with TTL support
+- **Authentication**: Secure JWT-like token authentication with RBAC
 - **Logging**: Structured logging with multiple levels and file support
 - **Validation**: Comprehensive data validation with custom rules
-- **HTTP Client**: Easy-to-use HTTP client for API requests
+- **HTTP Client**: Promise-based HTTP client with retry logic
 - **Utilities**: Common helpers (retry, debounce, uuid, sleep, etc.)
 - **Error Handling**: Custom error types with proper error management
 - **IoT Support**: Device management with MQTT protocol

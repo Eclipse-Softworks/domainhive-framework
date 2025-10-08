@@ -1,24 +1,25 @@
-// Core exports
 export { DomainHive } from './core/DomainHive';
 
-// Module exports
 export { IoTModule } from './modules/IoT/IoTModule';
 export { MicroserviceModule } from './modules/Microservices/MicroserviceModule';
 export { AuthModule, User, TokenPayload, AuthConfig } from './modules/Auth/AuthModule';
 export { LoggingModule, LogLevel as ModuleLogLevel, LogEntry as ModuleLogEntry, LoggingConfig } from './modules/Logging/LoggingModule';
 
-// Protocol exports
+export { RESTModule, RESTConfig, RouteHandler, RouterConfig } from './modules/REST/RESTModule';
+export { GraphQLModule, GraphQLConfig, TypeDefinition, ResolverMap } from './modules/GraphQL/GraphQLModule';
+export { GRPCModule, GRPCConfig, ServiceDefinition } from './modules/gRPC/gRPCModule';
+export { WebSocketModule, WebSocketConfig, WebSocketMessage, ConnectionInfo } from './modules/WebSocket/WebSocketModule';
+export { DatabaseModule, DatabaseConfig, DatabaseType, QueryOptions } from './modules/Database/DatabaseModule';
+export { CacheModule, CacheConfig, CacheType } from './modules/Cache/CacheModule';
+
 export { MQTTProtocol } from './modules/IoT/protocols/MQTTProtocol';
 
-// Interface exports
 export { Device } from './interfaces/Device';
 export { Protocol } from './interfaces/Protocol';
 export { Service } from './interfaces/Service';
 export { ServiceCriteria } from './interfaces/ServiceCriteria';
 export { ServiceRegistry } from './interfaces/ServiceRegistry';
 
-// Utilities exports
 export * from './utils';
 
-// Broker exports
 export { default as mqttBroker, brokerReady } from './broker/mqtt-broker';

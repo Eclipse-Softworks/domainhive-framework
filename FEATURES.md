@@ -1,20 +1,123 @@
 # DomainHive Framework - Feature List
 
-Complete list of features available in the DomainHive Framework for everyday development tasks.
+Complete list of features available in the DomainHive Framework. This enterprise-ready framework provides everything needed to build production backend systems.
 
 ## Core Framework
 
 ### DomainHive Singleton
-- **Centralized Configuration Management**: Store and retrieve app-wide settings
-- **Module Registry**: Register and retrieve modules dynamically
-- **Event System**: Built-in event emitter for module communication
-- **Singleton Pattern**: Ensure single instance across application
+- Centralized Configuration Management
+- Module Registry for dynamic module registration
+- Event System for module communication
+- Singleton Pattern for application-wide instance
 
 ```typescript
 const hive = DomainHive.getInstance();
 hive.setConfig({ key: 'value' });
 hive.registerModule('moduleName', moduleInstance);
 ```
+
+---
+
+## API & Communication Protocols
+
+### REST API Server (RESTModule)
+- Express-based HTTP server
+- Route registration with all HTTP methods
+- Built-in middleware support
+- CORS configuration
+- Helmet security headers
+- Rate limiting
+- Request logging and monitoring
+- Custom router creation with prefixes
+- Body parsing (JSON and URL-encoded)
+
+**Key Methods:**
+- `addRoute(route)`
+- `createRouter({ prefix, middleware })`
+- `start()` / `stop()`
+- `use(middleware)`
+- `getApp()`
+
+### GraphQL Server (GraphQLModule)
+- Schema definition and building
+- Query and mutation support
+- Type definitions and resolvers
+- GraphiQL interface for development
+- Custom type creation
+- Input type support
+
+**Key Methods:**
+- `addQuery(name, config)`
+- `addMutation(name, config)`
+- `addType(typeDef)`
+- `buildSchema()`
+- `getMiddleware()`
+
+### gRPC Server (GRPCModule)
+- Protocol buffer file loading
+- Service registration and implementation
+- Unary and streaming RPC support
+- Server credentials configuration
+- Client creation helper
+- Service discovery
+
+**Key Methods:**
+- `loadProtoFile(protoFile)`
+- `addService(name, definition, implementation)`
+- `start()` / `stop()`
+- `getPackageDefinition(protoFile)`
+
+### WebSocket Server (WebSocketModule)
+- Real-time bidirectional communication
+- Event-based messaging system
+- Connection tracking and management
+- Per-connection metadata
+- Broadcast and targeted messaging
+- Custom message handlers
+- Message type routing
+
+**Key Methods:**
+- `start()` / `stop()`
+- `send(connectionId, message)`
+- `broadcast(message, excludeId)`
+- `onMessage(type, handler)`
+- `disconnect(connectionId)`
+
+---
+
+## Data Management
+
+### Database Module (DatabaseModule)
+- Multi-database support (PostgreSQL, MongoDB, MySQL)
+- Connection pooling
+- Unified query interface
+- Transaction support
+- Connection string or config-based setup
+- SSL support
+- Event-driven connection status
+
+**Key Methods:**
+- `connect()` / `disconnect()`
+- `query(sql, params)`
+- `getCollection(name)` for MongoDB
+- `getPool()` for SQL databases
+
+### Cache Module (CacheModule)
+- Redis integration for distributed caching
+- In-memory caching for simple use cases
+- TTL (Time-To-Live) support
+- Automatic memory cleanup
+- Key prefix support
+- JSON serialization
+- Event-driven operations
+
+**Key Methods:**
+- `connect()` / `disconnect()`
+- `set(key, value, ttl)`
+- `get(key)`
+- `delete(key)`
+- `has(key)`
+- `clear()`
 
 ---
 
@@ -242,19 +345,19 @@ const validator = new Validator({
 
 ---
 
-## Coming Soon
+## Future Enhancements
 
-Future features being considered:
-- GraphQL client
-- WebSocket support
-- Caching module
-- Rate limiting
-- Job queue
-- Email module
-- SMS module
-- Payment integration
-- Database connectors
-- Redis integration
+Features being considered for future releases:
+- GraphQL subscriptions for real-time updates
+- Job queue with Redis/Bull integration
+- Email module with template support
+- SMS module with multiple providers
+- Payment gateway integration (Stripe, PayPal)
+- File storage module (S3, local filesystem)
+- Background task scheduling (cron jobs)
+- API documentation generation (Swagger/OpenAPI)
+- Metrics and monitoring integration (Prometheus)
+- Distributed tracing support
 
 ---
 
