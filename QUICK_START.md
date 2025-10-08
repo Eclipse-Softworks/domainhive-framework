@@ -204,6 +204,9 @@ npm start
 
 # Run the comprehensive example
 npm run example
+
+# Run the backend server example (REST + GraphQL + WebSocket)
+npm run server
 ```
 
 ## Project Structure
@@ -212,10 +215,16 @@ npm run example
 src/
 ├── core/              # Core framework (DomainHive singleton)
 ├── modules/           # Feature modules
-│   ├── Auth/          # Authentication module
-│   ├── Logging/       # Advanced logging
+│   ├── REST/          # REST API server with Express
+│   ├── GraphQL/       # GraphQL server with schemas
+│   ├── gRPC/          # gRPC server with protocol buffers
+│   ├── WebSocket/     # WebSocket server for real-time
+│   ├── Database/      # Database connectors (PostgreSQL, MongoDB, MySQL)
+│   ├── Cache/         # Caching (Redis, in-memory)
+│   ├── Auth/          # Authentication and authorization
+│   ├── Logging/       # Advanced logging with file support
 │   ├── IoT/           # IoT device management
-│   └── Microservices/ # Service registry
+│   └── Microservices/ # Service registry and discovery
 ├── utils/             # Utility functions
 │   ├── logger.ts      # Simple logger
 │   ├── helpers.ts     # Common helpers
@@ -223,6 +232,10 @@ src/
 │   ├── validator.ts   # Data validation
 │   └── errors.ts      # Error classes
 ├── interfaces/        # TypeScript interfaces
+├── examples/          # Example implementations
+│   ├── usage.ts       # Basic usage example
+│   ├── comprehensive-usage.ts  # Comprehensive features
+│   └── backend-server.ts       # Full backend server
 └── index.ts           # Main entry point
 ```
 

@@ -206,19 +206,29 @@ This design enables independent development, testing, and deployment of each mod
 
 ```
 domainhive-framework/
-├── docs/                 # Documentation, architecture diagrams, and guides
-├── examples/             # Example projects demonstrating framework usage
 ├── src/
-│   ├── core/             # Core API and configuration modules
-│   ├── modules/          # Independent, reusable modules (e.g., authentication, logging)
-│   └── utils/            # Utility functions and helpers
-├── tests/                # Unit and integration tests
-├── .github/
-│   ├── workflows/        # CI/CD configurations (GitHub Actions)
-│   └── ISSUE_TEMPLATE.md # Issue template for bug reports and feature requests
-├── README.md             # This file
-├── CONTRIBUTING.md       # Guidelines for contributing
-└── LICENSE               # Project license (MIT, Apache, etc.)
+│   ├── core/                # Core framework (DomainHive singleton)
+│   ├── modules/             # Feature modules
+│   │   ├── REST/            # REST API server with Express
+│   │   ├── GraphQL/         # GraphQL server with schema support
+│   │   ├── gRPC/            # gRPC server with protocol buffers
+│   │   ├── WebSocket/       # WebSocket server for real-time
+│   │   ├── Database/        # Database connectors (PostgreSQL, MongoDB, MySQL)
+│   │   ├── Cache/           # Caching (Redis, in-memory)
+│   │   ├── Auth/            # Authentication and authorization
+│   │   ├── Logging/         # Advanced logging with file support
+│   │   ├── IoT/             # IoT device management
+│   │   └── Microservices/   # Service registry and discovery
+│   ├── utils/               # Utility functions and helpers
+│   ├── interfaces/          # TypeScript interfaces
+│   ├── broker/              # MQTT broker
+│   └── examples/            # Example implementations
+├── dist/                    # Compiled JavaScript output
+├── README.md                # Project overview and setup
+├── FEATURES.md              # Detailed feature list
+├── USAGE_GUIDE.md           # Comprehensive usage documentation
+├── QUICK_START.md           # Quick start guide
+└── package.json             # Project dependencies and scripts
 ```
 
 ---
