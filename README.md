@@ -47,6 +47,14 @@ By leveraging DomainHive Framework, teams can reduce time-to-market, maintain hi
   - Each module (authentication, logging, data processing, etc.) is self-contained with clear interfaces.
   - Easily add, remove, or update modules without impacting the overall system.
 
+- **Everyday Developer Tools:**
+  - Authentication & Authorization with role-based access control
+  - Structured logging with file rotation and multiple levels
+  - Data validation with custom rules and schemas
+  - HTTP client with retry logic and authentication support
+  - Common utilities (UUID generation, retry with backoff, debounce, throttle, etc.)
+  - Custom error types for better error handling
+
 - **Comprehensive Documentation:**
   - Detailed usage guides and API references.
   - Example projects in the `examples/` folder to demonstrate real-world applications.
@@ -94,19 +102,23 @@ This design enables independent development, testing, and deployment of each mod
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/yourusername/domainhive-framework.git
+   git clone https://github.com/Eclipse-Softworks/domainhive-framework.git
    cd domainhive-framework
    ```
 
 2. **Install Dependencies:**
-   If using Node.js:
    ```bash
    npm install
    ```
 
-3. **Run Initial Tests:**
+3. **Build the Framework:**
    ```bash
-   npm test
+   npm run build
+   ```
+
+4. **Run Examples:**
+   ```bash
+   npm run example
    ```
 
 ### Project Structure
@@ -132,16 +144,31 @@ domainhive-framework/
 
 ## Usage
 
-After installation, refer to the documentation in the `docs/` folder for detailed guides on:
+After installation, you can start using the framework right away:
 
-- **Integrating Core APIs:**  
-  Learn how to call API endpoints and customize configuration settings.
+```typescript
+import { DomainHive, logger, AuthModule } from 'domainhive-framework';
 
-- **Adding New Modules:**  
-  Step-by-step instructions on how to develop and integrate new modules into the framework.
+const hive = DomainHive.getInstance();
+logger.info('Framework ready!');
+```
 
-- **Example Projects:**  
-  Explore example applications in the `examples/` folder to understand practical implementations.
+For comprehensive guides, see:
+
+- **[Quick Start Guide](./QUICK_START.md):** Get started in 5 minutes
+- **[Usage Guide](./USAGE_GUIDE.md):** Detailed documentation for all features
+- **[Example Projects](./src/examples/):** Practical implementations
+
+### Key Capabilities
+
+- **Authentication**: Secure user authentication with JWT-like tokens
+- **Logging**: Structured logging with multiple levels and file support
+- **Validation**: Comprehensive data validation with custom rules
+- **HTTP Client**: Easy-to-use HTTP client for API requests
+- **Utilities**: Common helpers (retry, debounce, uuid, sleep, etc.)
+- **Error Handling**: Custom error types with proper error management
+- **IoT Support**: Device management with MQTT protocol
+- **Microservices**: Service registry and discovery
 
 ---
 
