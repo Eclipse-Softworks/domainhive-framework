@@ -11,7 +11,8 @@
     "server": "node dist/examples/backend-server.js",
     "dev": "ts-node src/examples/usage.ts",
     "test": "jest",
-    "prepare": "npm run build"
+    "prepare": "npm run build",
+    "release": "bash scripts/publish.sh"
   },
   "keywords": [
     "backend",
