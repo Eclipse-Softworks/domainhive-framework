@@ -8,7 +8,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,
-    "types": ["node", "mqtt", "jest"],
+    "types": ["node", "mqtt"],
     "typeRoots": ["./node_modules/@types"]
   },
   "include": ["src"],

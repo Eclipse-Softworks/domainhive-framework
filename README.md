@@ -290,6 +290,18 @@ We welcome contributions from the community! Please check our [CONTRIBUTING.md](
 
 ---
 
+## Release
+
+To publish a new release:
+
+1. Update version in `package.json`
+2. Update `CHANGELOG.md` with release notes
+3. Run `npm run release` to create tag and publish
+
+See [RELEASE.md](RELEASE.md) for detailed release instructions.
+
+---
+
 ## Roadmap
 
 Our planned milestones include:

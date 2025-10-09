@@ -1,0 +1,44 @@
+# Development files
+*.test.ts
+*.test.js
+*.spec.ts
+*.spec.js
+__tests__/
+.github/
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build tools
+tsconfig.json
+jest.config.js
+
+# Temporary files
+tmp/
+temp/
+coverage/
+
+# Scripts (internal use only)
+scripts/
