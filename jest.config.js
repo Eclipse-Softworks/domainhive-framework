@@ -9,4 +9,11 @@ module.exports = {
     '!src/**/*.d.ts',
     '!src/examples/**',
   ],
+  transform: {
+    '^.+\\.ts$': ['ts-jest', {
+      tsconfig: {
+        types: ['jest', 'node']
+      }
+    }]
+  }
 };
