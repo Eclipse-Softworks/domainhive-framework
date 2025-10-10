@@ -1,7 +1,7 @@
 {
   "name": "domainhive-framework",
   "version": "1.0.0",
-  "description": "Enterprise-ready backend framework with REST, GraphQL, gRPC, WebSocket, Database, and Cache support",
+  "description": "The ultimate hackathon backend framework - Complete backend in 5 minutes with Auth, WebSocket, REST, GraphQL, Database, and Cache ready out of the box",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -15,15 +15,24 @@
     "release": "bash scripts/publish.sh"
   },
   "keywords": [
+    "hackathon",
     "backend",
     "framework",
     "rest",
     "graphql",
-    "grpc",
     "websocket",
+    "chat",
+    "auth",
+    "notifications",
+    "real-time",
     "database",
     "cache",
     "typescript",
+    "mvp",
+    "rapid-prototyping",
+    "express",
+    "socket.io",
+    "grpc",
     "microservices",
     "iot",
     "enterprise"

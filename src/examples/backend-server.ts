@@ -111,6 +111,86 @@ async function main() {
     res.status(201).json({ success: true, data });
   });
 
+  // Notifications endpoints
+  apiRouter.get('/notifications', async (req, res) => {
+    const cachedNotifications = await cache.get('notifications');
+    if (cachedNotifications) {
+      return res.json({ notifications: cachedNotifications });
+    }
+
+    const notifications = [
+      { id: '1', title: 'Welcome!', message: 'Welcome to DomainHive Framework', type: 'info', timestamp: Date.now() - 3600000 },
+      { id: '2', title: 'System Update', message: 'New features available', type: 'success', timestamp: Date.now() - 1800000 }
+    ];
+
+    await cache.set('notifications', notifications, 300);
+    res.json({ notifications });
+  });
+
+  apiRouter.post('/notifications', async (req, res) => {
+    const { title, message, type = 'info' } = req.body;
+    const notification = {
+      id: `notif-${Date.now()}`,
+      title,
+      message,
+      type,
+      timestamp: Date.now()
+    };
+
+    // Get existing notifications
+    const existing = await cache.get('notifications') || [];
+    existing.push(notification);
+    await cache.set('notifications', existing, 300);
+
+    // Broadcast to all connected WebSocket clients
+    ws.broadcast({
+      type: 'notification',
+      data: notification
+    });
+
+    res.status(201).json({ success: true, notification });
+  });
+
+  // Chat endpoints
+  apiRouter.get('/messages', async (req, res) => {
+    const room = req.query.room || 'general';
+    const messages = await cache.get(`messages:${room}`) || [];
+    res.json({ room, messages });
+  });
+
+  apiRouter.post('/messages', async (req, res) => {
+    const { room = 'general', message, username } = req.body;
+    
+    if (!message || !username) {
+      return res.status(400).json({ error: 'message and username are required' });
+    }
+
+    const chatMessage = {
+      id: `msg-${Date.now()}`,
+      room,
+      username,
+      message,
+      timestamp: Date.now()
+    };
+
+    // Store message in cache
+    const messages = await cache.get(`messages:${room}`) || [];
+    messages.push(chatMessage);
+    // Keep only last 100 messages
+    if (messages.length > 100) {
+      messages.shift();
+    }
+    await cache.set(`messages:${room}`, messages, 3600);
+
+    // Broadcast to WebSocket clients in the same room
+    ws.broadcast({
+      type: 'chat',
+      data: chatMessage
+    });
+
+    res.status(201).json({ success: true, message: chatMessage });
+  });
+
   const graphql = new GraphQLModule({ graphiql: true });
 
   const UserType = graphql.addType({
@@ -178,6 +258,40 @@ async function main() {
     logger.info(`Broadcast message to ${messageCount} clients`);
   });
 
+  ws.onMessage('chat', async (data, connectionId) => {
+    const { room = 'general', message, username } = data;
+    
+    const chatMessage = {
+      id: `msg-${Date.now()}`,
+      room,
+      username,
+      message,
+      timestamp: Date.now(),
+      connectionId
+    };
+
+    // Store in cache
+    const messages = await cache.get(`messages:${room}`) || [];
+    messages.push(chatMessage);
+    if (messages.length > 100) messages.shift();
+    await cache.set(`messages:${room}`, messages, 3600);
+
+    // Broadcast to all clients
+    ws.broadcast({
+      type: 'chat',
+      data: chatMessage
+    });
+  });
+
+  ws.onMessage('join-room', (data, connectionId) => {
+    const { room } = data;
+    ws.send(connectionId, {
+      type: 'room-joined',
+      data: { room, connectionId }
+    });
+    logger.info(`Client ${connectionId} joined room: ${room}`);
+  });
+
   ws.on('disconnection', ({ connectionId }) => {
     logger.info(`WebSocket client disconnected: ${connectionId}`);
   });
@@ -190,14 +304,30 @@ async function main() {
   logger.info('WebSocket server started on ws://0.0.0.0:8080/ws');
 
   logger.info('=== Backend Server Ready ===');
+  logger.info('');
   logger.info('REST API: http://localhost:3000');
-  logger.info('  - GET  /health');
-  logger.info('  - POST /auth/login');
-  logger.info('  - GET  /auth/verify');
-  logger.info('  - GET  /api/users');
-  logger.info('  - POST /api/data');
+  logger.info('');
+  logger.info('Auth Endpoints:');
+  logger.info('  - POST /auth/login          (Login with credentials)');
+  logger.info('  - GET  /auth/verify         (Verify token)');
+  logger.info('');
+  logger.info('Data Endpoints:');
+  logger.info('  - GET  /health              (Health check)');
+  logger.info('  - GET  /api/users           (Get users)');
+  logger.info('  - POST /api/data            (Store data)');
+  logger.info('');
+  logger.info('Notification Endpoints:');
+  logger.info('  - GET  /api/notifications   (Get notifications)');
+  logger.info('  - POST /api/notifications   (Create notification)');
+  logger.info('');
+  logger.info('Chat Endpoints:');
+  logger.info('  - GET  /api/messages        (Get messages by room)');
+  logger.info('  - POST /api/messages        (Send message)');
+  logger.info('');
   logger.info('GraphQL: http://localhost:3000/graphql');
+  logger.info('');
   logger.info('WebSocket: ws://localhost:8080/ws');
+  logger.info('  Events: ping, broadcast, chat, join-room');
   logger.info('');
   logger.info('Test credentials:');
   logger.info('  Username: admin, Password: admin123');
