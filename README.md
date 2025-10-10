@@ -18,16 +18,24 @@ Developed and maintained by **Eclipse Softworks (ES)**, DomainHive Framework eli
 
 ---
 
+## 🚀 Quick Links for Hackathons
+
+- 🏁 [5-Minute Quick Start](#quick-start-for-hackathons-5-minutes) - Get running NOW
+- 🏆 [Hackathon Guide](./HACKATHON_GUIDE.md) - Copy-paste ready patterns
+- 💬 [Chat Backend Example](./HACKATHON_GUIDE.md#pattern-2-real-time-chat-application)
+- 🔐 [Auth + API Example](./HACKATHON_GUIDE.md#pattern-1-social-media-backend)
+- 🔔 [Notification System](./HACKATHON_GUIDE.md#pattern-3-notification-system)
+
 ## Table of Contents
 
 - [Overview](#overview)
 - [Key Features](#key-features)
-- [Architecture](#architecture)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Project Structure](#project-structure)
 - [Usage](#usage)
+- [Pre-Built Server Endpoints](#pre-built-server-endpoints)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
@@ -437,10 +445,11 @@ This starts a complete backend with:
 
 ### Documentation
 
+- **[Hackathon Guide](./HACKATHON_GUIDE.md):** 🏆 Copy-paste patterns for common hackathon projects
 - **[Quick Start Guide](./QUICK_START.md):** Get started in 5 minutes
 - **[Usage Guide](./USAGE_GUIDE.md):** Detailed documentation for all features
 - **[Features List](./FEATURES.md):** Complete feature reference
-- **[Example Projects](./src/examples/):** Copy-paste ready implementations
+- **[Example Projects](./src/examples/):** Working code examples
 
 ### Complete Feature Set
 
@@ -458,6 +467,114 @@ This starts a complete backend with:
 - **Error Handling**: Custom error types with detailed messages
 - **IoT Support**: MQTT protocol for device communication
 - **Microservices**: Service registry and discovery
+
+---
+
+## Pre-Built Server Endpoints
+
+When you run `npm run server`, you get these endpoints ready to use:
+
+### Authentication Endpoints
+```
+POST   /auth/login           - Login with username/password
+GET    /auth/verify          - Verify JWT token
+```
+
+**Example Login:**
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+```
+
+### User Management
+```
+GET    /api/users            - Get all users (with caching)
+```
+
+### Data Storage
+```
+POST   /api/data             - Store arbitrary data
+```
+
+### Notifications
+```
+GET    /api/notifications    - Get all notifications
+POST   /api/notifications    - Create notification (broadcasts via WebSocket)
+```
+
+**Example Create Notification:**
+```bash
+curl -X POST http://localhost:3000/api/notifications \
+  -H "Content-Type: application/json" \
+  -d '{"title":"New Alert","message":"Something happened!","type":"info"}'
+```
+
+### Chat System
+```
+GET    /api/messages         - Get messages by room (?room=general)
+POST   /api/messages         - Send message (broadcasts via WebSocket)
+```
+
+**Example Send Message:**
+```bash
+curl -X POST http://localhost:3000/api/messages \
+  -H "Content-Type: application/json" \
+  -d '{"username":"john","message":"Hello!","room":"general"}'
+```
+
+### GraphQL Endpoint
+```
+POST   /graphql              - GraphQL queries and mutations
+GET    /graphql              - GraphiQL interface (in browser)
+```
+
+**Example Query:**
+```graphql
+query {
+  users {
+    id
+    username
+    email
+    roles
+  }
+}
+```
+
+### WebSocket Events
+
+Connect to `ws://localhost:8080/ws` and use these events:
+
+```javascript
+// Client-side example
+const ws = new WebSocket('ws://localhost:8080/ws');
+
+// Listen for messages
+ws.onmessage = (event) => {
+  const { type, data } = JSON.parse(event.data);
+  console.log('Received:', type, data);
+};
+
+// Send events
+ws.send(JSON.stringify({ type: 'ping' }));
+ws.send(JSON.stringify({ 
+  type: 'chat', 
+  data: { username: 'john', message: 'Hello!', room: 'general' } 
+}));
+ws.send(JSON.stringify({ type: 'join-room', data: { room: 'general' } }));
+```
+
+**Available Events:**
+- `ping` - Health check (responds with `pong`)
+- `chat` - Send chat message (broadcasts to all)
+- `broadcast` - Broadcast custom message
+- `join-room` - Join a chat room
+
+**Server Broadcasts:**
+- `notification` - New notification created
+- `chat` - New chat message
+- `user-joined` - User joined a room
+- `room-joined` - Confirmation of room join
 
 ---
 
