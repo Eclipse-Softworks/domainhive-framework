@@ -2,22 +2,13 @@
  * Unit tests for helper utility functions
  */
 
-import {
-  uuid,
-  isEmpty,
-  deepClone,
-  chunk,
-  unique,
-  sleep,
-} from '../../utils/helpers';
+import { uuid, isEmpty, deepClone, chunk, unique, sleep } from '../../utils/helpers';
 
 describe('Helper Utilities', () => {
   describe('uuid', () => {
     it('should generate a valid UUID v4', () => {
       const id = uuid();
-      expect(id).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-      );
+      expect(id).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
     });
 
     it('should generate unique UUIDs', () => {
