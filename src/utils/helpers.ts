@@ -9,15 +9,15 @@ export function deepClone<T>(obj: T): T {
   if (obj === null || typeof obj !== 'object') {
     return obj;
   }
-  
+
   if (obj instanceof Date) {
     return new Date(obj.getTime()) as any;
   }
-  
+
   if (obj instanceof Array) {
-    return obj.map(item => deepClone(item)) as any;
+    return obj.map((item) => deepClone(item)) as any;
   }
-  
+
   if (obj instanceof Object) {
     const clonedObj: any = {};
     for (const key in obj) {
@@ -27,7 +27,7 @@ export function deepClone<T>(obj: T): T {
     }
     return clonedObj;
   }
-  
+
   return obj;
 }
 
@@ -39,8 +39,8 @@ export function debounce<T extends (...args: any[]) => any>(
   wait: number
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
-  
-  return function(...args: Parameters<T>) {
+
+  return function (...args: Parameters<T>) {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
@@ -54,12 +54,12 @@ export function throttle<T extends (...args: any[]) => any>(
   limit: number
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean = false;
-  
-  return function(...args: Parameters<T>) {
+
+  return function (...args: Parameters<T>) {
     if (!inThrottle) {
       func(...args);
       inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+      setTimeout(() => (inThrottle = false), limit);
     }
   };
 }
@@ -68,7 +68,7 @@ export function throttle<T extends (...args: any[]) => any>(
  * Sleep/delay for a specified time
  */
 export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**
@@ -83,12 +83,7 @@ export async function retry<T>(
     factor?: number;
   } = {}
 ): Promise<T> {
-  const {
-    maxAttempts = 3,
-    initialDelay = 1000,
-    maxDelay = 30000,
-    factor = 2
-  } = options;
+  const { maxAttempts = 3, initialDelay = 1000, maxDelay = 30000, factor = 2 } = options;
 
   let lastError: Error;
   let delay = initialDelay;
@@ -98,11 +93,11 @@ export async function retry<T>(
       return await fn();
     } catch (error) {
       lastError = error as Error;
-      
+
       if (attempt === maxAttempts) {
         throw lastError;
       }
-      
+
       await sleep(Math.min(delay, maxDelay));
       delay *= factor;
     }
@@ -115,9 +110,9 @@ export async function retry<T>(
  * Generate a UUID v4
  */
 export function uuid(): string {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 }
@@ -138,11 +133,11 @@ export function isEmpty(value: any): boolean {
  */
 export function flatten(obj: Record<string, any>, prefix: string = ''): Record<string, any> {
   const result: Record<string, any> = {};
-  
+
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
       const newKey = prefix ? `${prefix}.${key}` : key;
-      
+
       if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
         Object.assign(result, flatten(obj[key], newKey));
       } else {
@@ -150,19 +145,16 @@ export function flatten(obj: Record<string, any>, prefix: string = ''): Record<s
       }
     }
   }
-  
+
   return result;
 }
 
 /**
  * Pick specific keys from an object
  */
-export function pick<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Pick<T, K> {
+export function pick<T extends object, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
   const result = {} as Pick<T, K>;
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (key in obj) {
       result[key] = obj[key];
     }
@@ -173,12 +165,9 @@ export function pick<T extends object, K extends keyof T>(
 /**
  * Omit specific keys from an object
  */
-export function omit<T extends object, K extends keyof T>(
-  obj: T,
-  keys: K[]
-): Omit<T, K> {
+export function omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> {
   const result = { ...obj };
-  keys.forEach(key => {
+  keys.forEach((key) => {
     delete result[key];
   });
   return result;

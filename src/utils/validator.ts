@@ -41,7 +41,7 @@ export class Validator {
         errors.push({
           field,
           message: rules.message || `${field} is required`,
-          rule: 'required'
+          rule: 'required',
         });
         continue;
       }
@@ -58,30 +58,32 @@ export class Validator {
           errors.push({
             field,
             message: rules.message || `${field} must be of type ${rules.type}`,
-            rule: 'type'
+            rule: 'type',
           });
           continue;
         }
       }
 
       // Min/Max for strings and arrays (length)
-      if ((rules.min !== undefined || rules.max !== undefined) && 
-          (typeof value === 'string' || Array.isArray(value))) {
+      if (
+        (rules.min !== undefined || rules.max !== undefined) &&
+        (typeof value === 'string' || Array.isArray(value))
+      ) {
         const length = value.length;
-        
+
         if (rules.min !== undefined && length < rules.min) {
           errors.push({
             field,
             message: rules.message || `${field} must be at least ${rules.min} characters/items`,
-            rule: 'min'
+            rule: 'min',
           });
         }
-        
+
         if (rules.max !== undefined && length > rules.max) {
           errors.push({
             field,
             message: rules.message || `${field} must be at most ${rules.max} characters/items`,
-            rule: 'max'
+            rule: 'max',
           });
         }
       }
@@ -92,15 +94,15 @@ export class Validator {
           errors.push({
             field,
             message: rules.message || `${field} must be at least ${rules.min}`,
-            rule: 'min'
+            rule: 'min',
           });
         }
-        
+
         if (rules.max !== undefined && value > rules.max) {
           errors.push({
             field,
             message: rules.message || `${field} must be at most ${rules.max}`,
-            rule: 'max'
+            rule: 'max',
           });
         }
       }
@@ -111,7 +113,7 @@ export class Validator {
           errors.push({
             field,
             message: rules.message || `${field} does not match required pattern`,
-            rule: 'pattern'
+            rule: 'pattern',
           });
         }
       }
@@ -122,8 +124,11 @@ export class Validator {
         if (customResult !== true) {
           errors.push({
             field,
-            message: typeof customResult === 'string' ? customResult : (rules.message || `${field} validation failed`),
-            rule: 'custom'
+            message:
+              typeof customResult === 'string'
+                ? customResult
+                : rules.message || `${field} validation failed`,
+            rule: 'custom',
           });
         }
       }
@@ -131,7 +136,7 @@ export class Validator {
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 
@@ -164,16 +169,16 @@ export const commonSchemas = {
     email: {
       required: true,
       type: 'string' as const,
-      custom: (value: string) => Validator.email(value) || 'Invalid email format'
-    }
+      custom: (value: string) => Validator.email(value) || 'Invalid email format',
+    },
   },
   password: {
     password: {
       required: true,
       type: 'string' as const,
       min: 8,
-      message: 'Password must be at least 8 characters long'
-    }
+      message: 'Password must be at least 8 characters long',
+    },
   },
   username: {
     username: {
@@ -182,7 +187,8 @@ export const commonSchemas = {
       min: 3,
       max: 20,
       pattern: /^[a-zA-Z0-9_]+$/,
-      message: 'Username must be 3-20 characters and contain only letters, numbers, and underscores'
-    }
-  }
+      message:
+        'Username must be 3-20 characters and contain only letters, numbers, and underscores',
+    },
+  },
 };

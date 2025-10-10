@@ -3,12 +3,11 @@ import {
   RESTModule,
   GraphQLModule,
   WebSocketModule,
-  DatabaseModule,
   CacheModule,
   AuthModule,
-  logger
+  logger,
 } from '../index';
-import { GraphQLString, GraphQLObjectType, GraphQLList } from 'graphql';
+import { GraphQLString, GraphQLList } from 'graphql';
 
 async function main() {
   logger.info('Starting DomainHive Backend Server Example');
@@ -18,8 +17,8 @@ async function main() {
     app: {
       name: 'DomainHive Backend',
       version: '1.0.0',
-      environment: 'development'
-    }
+      environment: 'development',
+    },
   });
 
   const cache = new CacheModule({ type: 'memory' });
@@ -29,7 +28,7 @@ async function main() {
 
   const auth = new AuthModule({
     secretKey: 'demo-secret-key',
-    tokenExpiration: 3600
+    tokenExpiration: 3600,
   });
   hive.registerModule('auth', auth);
   logger.info('Auth module initialized');
@@ -41,7 +40,7 @@ async function main() {
   const rest = new RESTModule({
     port: 3000,
     cors: { origin: '*' },
-    rateLimit: { windowMs: 15 * 60 * 1000, max: 100 }
+    rateLimit: { windowMs: 15 * 60 * 1000, max: 100 },
   });
   hive.registerModule('rest', rest);
 
@@ -52,9 +51,9 @@ async function main() {
   rest.addRoute({
     method: 'GET',
     path: '/health',
-    handler: (req, res) => {
+    handler: (_req, res) => {
       res.json({ status: 'healthy', timestamp: Date.now() });
-    }
+    },
   });
 
   rest.addRoute({
@@ -68,7 +67,7 @@ async function main() {
       } catch (error: any) {
         res.status(401).json({ success: false, error: error.message });
       }
-    }
+    },
   });
 
   rest.addRoute({
@@ -81,16 +80,16 @@ async function main() {
           return res.status(401).json({ error: 'No token provided' });
         }
         const user = await auth.verifyAuth(token);
-        res.json({ valid: true, user });
+        return res.json({ valid: true, user });
       } catch (error: any) {
-        res.status(401).json({ valid: false, error: error.message });
+        return res.status(401).json({ valid: false, error: error.message });
       }
-    }
+    },
   });
 
   const apiRouter = rest.createRouter({ prefix: '/api' });
 
-  apiRouter.get('/users', async (req, res) => {
+  apiRouter.get('/users', async (_req, res) => {
     const cachedUsers = await cache.get('users');
     if (cachedUsers) {
       return res.json({ users: cachedUsers, source: 'cache' });
@@ -98,11 +97,11 @@ async function main() {
 
     const users = [
       { id: '1', name: 'Admin User', email: 'admin@example.com', role: 'admin' },
-      { id: '2', name: 'Regular User', email: 'user@example.com', role: 'user' }
+      { id: '2', name: 'Regular User', email: 'user@example.com', role: 'user' },
     ];
 
     await cache.set('users', users, 60);
-    res.json({ users, source: 'fresh' });
+    return res.json({ users, source: 'fresh' });
   });
 
   apiRouter.post('/data', async (req, res) => {
@@ -112,19 +111,31 @@ async function main() {
   });
 
   // Notifications endpoints
-  apiRouter.get('/notifications', async (req, res) => {
+  apiRouter.get('/notifications', async (_req, res) => {
     const cachedNotifications = await cache.get('notifications');
     if (cachedNotifications) {
       return res.json({ notifications: cachedNotifications });
     }
 
     const notifications = [
-      { id: '1', title: 'Welcome!', message: 'Welcome to DomainHive Framework', type: 'info', timestamp: Date.now() - 3600000 },
-      { id: '2', title: 'System Update', message: 'New features available', type: 'success', timestamp: Date.now() - 1800000 }
+      {
+        id: '1',
+        title: 'Welcome!',
+        message: 'Welcome to DomainHive Framework',
+        type: 'info',
+        timestamp: Date.now() - 3600000,
+      },
+      {
+        id: '2',
+        title: 'System Update',
+        message: 'New features available',
+        type: 'success',
+        timestamp: Date.now() - 1800000,
+      },
     ];
 
     await cache.set('notifications', notifications, 300);
-    res.json({ notifications });
+    return res.json({ notifications });
   });
 
   apiRouter.post('/notifications', async (req, res) => {
@@ -134,18 +145,18 @@ async function main() {
       title,
       message,
       type,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     // Get existing notifications
-    const existing = await cache.get('notifications') || [];
+    const existing = (await cache.get('notifications')) || [];
     existing.push(notification);
     await cache.set('notifications', existing, 300);
 
     // Broadcast to all connected WebSocket clients
     ws.broadcast({
       type: 'notification',
-      data: notification
+      data: notification,
     });
 
     res.status(201).json({ success: true, notification });
@@ -154,13 +165,13 @@ async function main() {
   // Chat endpoints
   apiRouter.get('/messages', async (req, res) => {
     const room = req.query.room || 'general';
-    const messages = await cache.get(`messages:${room}`) || [];
+    const messages = (await cache.get(`messages:${room}`)) || [];
     res.json({ room, messages });
   });
 
   apiRouter.post('/messages', async (req, res) => {
     const { room = 'general', message, username } = req.body;
-    
+
     if (!message || !username) {
       return res.status(400).json({ error: 'message and username are required' });
     }
@@ -170,11 +181,11 @@ async function main() {
       room,
       username,
       message,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     // Store message in cache
-    const messages = await cache.get(`messages:${room}`) || [];
+    const messages = (await cache.get(`messages:${room}`)) || [];
     messages.push(chatMessage);
     // Keep only last 100 messages
     if (messages.length > 100) {
@@ -185,10 +196,10 @@ async function main() {
     // Broadcast to WebSocket clients in the same room
     ws.broadcast({
       type: 'chat',
-      data: chatMessage
+      data: chatMessage,
     });
 
-    res.status(201).json({ success: true, message: chatMessage });
+    return res.status(201).json({ success: true, message: chatMessage });
   });
 
   const graphql = new GraphQLModule({ graphiql: true });
@@ -199,8 +210,8 @@ async function main() {
       id: { type: GraphQLString },
       username: { type: GraphQLString },
       email: { type: GraphQLString },
-      roles: { type: new GraphQLList(GraphQLString) }
-    }
+      roles: { type: new GraphQLList(GraphQLString) },
+    },
   });
 
   graphql.addQuery('users', {
@@ -208,25 +219,27 @@ async function main() {
     resolve: async () => {
       return [
         { id: '1', username: 'admin', email: 'admin@example.com', roles: ['admin', 'user'] },
-        { id: '2', username: 'user', email: 'user@example.com', roles: ['user'] }
+        { id: '2', username: 'user', email: 'user@example.com', roles: ['user'] },
       ];
-    }
+    },
   });
 
   graphql.addQuery('user', {
     type: UserType,
     args: {
-      username: { type: GraphQLString }
+      username: { type: GraphQLString },
     },
-    resolve: async (parent: any, args: any) => {
+    resolve: async (_parent: any, args: any) => {
       const user = auth.getUserByUsername(args.username);
-      return user ? {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        roles: user.roles
-      } : null;
-    }
+      return user
+        ? {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            roles: user.roles,
+          }
+        : null;
+    },
   });
 
   rest.useAt('/graphql', graphql.getMiddleware());
@@ -234,44 +247,47 @@ async function main() {
 
   const ws = new WebSocketModule({
     port: 8080,
-    path: '/ws'
+    path: '/ws',
   });
   hive.registerModule('websocket', ws);
 
-  ws.on('connection', ({ connectionId, info }) => {
+  ws.on('connection', ({ connectionId }) => {
     logger.info(`WebSocket client connected: ${connectionId}`);
     ws.send(connectionId, {
       type: 'welcome',
-      data: { message: 'Connected to DomainHive WebSocket server', connectionId }
+      data: { message: 'Connected to DomainHive WebSocket server', connectionId },
     });
   });
 
-  ws.onMessage('ping', (data, connectionId) => {
+  ws.onMessage('ping', (_data, connectionId) => {
     ws.send(connectionId, { type: 'pong', data: { timestamp: Date.now() } });
   });
 
   ws.onMessage('broadcast', (data, connectionId) => {
-    const messageCount = ws.broadcast({
-      type: 'message',
-      data: { ...data, from: connectionId }
-    }, connectionId);
+    const messageCount = ws.broadcast(
+      {
+        type: 'message',
+        data: { ...data, from: connectionId },
+      },
+      connectionId
+    );
     logger.info(`Broadcast message to ${messageCount} clients`);
   });
 
   ws.onMessage('chat', async (data, connectionId) => {
     const { room = 'general', message, username } = data;
-    
+
     const chatMessage = {
       id: `msg-${Date.now()}`,
       room,
       username,
       message,
       timestamp: Date.now(),
-      connectionId
+      connectionId,
     };
 
     // Store in cache
-    const messages = await cache.get(`messages:${room}`) || [];
+    const messages = (await cache.get(`messages:${room}`)) || [];
     messages.push(chatMessage);
     if (messages.length > 100) messages.shift();
     await cache.set(`messages:${room}`, messages, 3600);
@@ -279,7 +295,7 @@ async function main() {
     // Broadcast to all clients
     ws.broadcast({
       type: 'chat',
-      data: chatMessage
+      data: chatMessage,
     });
   });
 
@@ -287,7 +303,7 @@ async function main() {
     const { room } = data;
     ws.send(connectionId, {
       type: 'room-joined',
-      data: { room, connectionId }
+      data: { room, connectionId },
     });
     logger.info(`Client ${connectionId} joined room: ${room}`);
   });
@@ -334,7 +350,7 @@ async function main() {
   logger.info('  Username: user, Password: user123');
 }
 
-main().catch(error => {
+main().catch((error) => {
   logger.error('Failed to start backend server', { error });
   process.exit(1);
 });

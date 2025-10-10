@@ -10,7 +10,7 @@ import {
   GraphQLNonNull,
   GraphQLFieldConfigMap,
   GraphQLInputObjectType,
-  GraphQLFieldResolver
+  GraphQLFieldResolver,
 } from 'graphql';
 import { RequestHandler } from 'express';
 
@@ -48,7 +48,7 @@ export class GraphQLModule extends EventEmitter {
     this.config = {
       graphiql: config.graphiql !== false,
       pretty: config.pretty !== false,
-      schemaConfig: config.schemaConfig || {}
+      schemaConfig: config.schemaConfig || {},
     };
 
     if (this.config.schemaConfig.query) {
@@ -88,7 +88,7 @@ export class GraphQLModule extends EventEmitter {
     const type = new GraphQLObjectType({
       name: typeDef.name,
       description: typeDef.description,
-      fields: typeDef.fields
+      fields: typeDef.fields,
     });
     this.types.set(typeDef.name, type);
     this.emit('typeAdded', { name: typeDef.name, type });
@@ -106,26 +106,28 @@ export class GraphQLModule extends EventEmitter {
 
     const queryType = new GraphQLObjectType({
       name: 'Query',
-      fields: Object.keys(this.queryFields).length > 0
-        ? this.queryFields
-        : {
-            hello: {
-              type: GraphQLString,
-              resolve: () => 'Hello from DomainHive GraphQL!'
-            }
-          }
+      fields:
+        Object.keys(this.queryFields).length > 0
+          ? this.queryFields
+          : {
+              hello: {
+                type: GraphQLString,
+                resolve: () => 'Hello from DomainHive GraphQL!',
+              },
+            },
     });
 
-    const mutationType = Object.keys(this.mutationFields).length > 0
-      ? new GraphQLObjectType({
-          name: 'Mutation',
-          fields: this.mutationFields
-        })
-      : undefined;
+    const mutationType =
+      Object.keys(this.mutationFields).length > 0
+        ? new GraphQLObjectType({
+            name: 'Mutation',
+            fields: this.mutationFields,
+          })
+        : undefined;
 
     this.schema = new GraphQLSchema({
       query: queryType,
-      mutation: mutationType
+      mutation: mutationType,
     });
 
     this.emit('schemaBuilt', this.schema);
@@ -134,11 +136,11 @@ export class GraphQLModule extends EventEmitter {
 
   getMiddleware(): RequestHandler {
     const schema = this.buildSchema();
-    
+
     return graphqlHTTP({
       schema,
       graphiql: this.config.graphiql,
-      pretty: this.config.pretty
+      pretty: this.config.pretty,
     }) as RequestHandler;
   }
 
@@ -152,15 +154,19 @@ export class GraphQLModule extends EventEmitter {
       Int: GraphQLInt,
       Boolean: GraphQLBoolean,
       List: GraphQLList,
-      NonNull: GraphQLNonNull
+      NonNull: GraphQLNonNull,
     };
   }
 
-  static createObjectType(name: string, fields: GraphQLFieldConfigMap<any, any>, description?: string): GraphQLObjectType {
+  static createObjectType(
+    name: string,
+    fields: GraphQLFieldConfigMap<any, any>,
+    description?: string
+  ): GraphQLObjectType {
     return new GraphQLObjectType({
       name,
       description,
-      fields
+      fields,
     });
   }
 
@@ -168,7 +174,7 @@ export class GraphQLModule extends EventEmitter {
     return new GraphQLInputObjectType({
       name,
       description,
-      fields
+      fields,
     });
   }
 }

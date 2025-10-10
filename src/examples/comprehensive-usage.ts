@@ -1,11 +1,10 @@
 import { DomainHive } from '../core/DomainHive';
 import { AuthModule } from '../modules/Auth/AuthModule';
 import { LoggingModule, LogLevel } from '../modules/Logging/LoggingModule';
-import { IoTModule } from '../modules/IoT/IoTModule';
 import { MicroserviceModule } from '../modules/Microservices/MicroserviceModule';
 import { logger } from '../utils/logger';
 import { httpClient } from '../utils/http-client';
-import { Validator, commonSchemas } from '../utils/validator';
+import { Validator } from '../utils/validator';
 import { retry, sleep, uuid } from '../utils/helpers';
 import { ValidationError, NotFoundError } from '../utils/errors';
 
@@ -20,32 +19,35 @@ async function main() {
     app: {
       name: 'DomainHive Example App',
       version: '1.0.0',
-      environment: 'development'
+      environment: 'development',
     },
     auth: {
-      secretKey: 'your-super-secret-key-change-in-production'
+      secretKey: 'your-super-secret-key-change-in-production',
     },
     logging: {
       level: LogLevel.DEBUG,
       enableFile: true,
-      logDirectory: './logs'
-    }
+      logDirectory: './logs',
+    },
   });
 
   logger.info('Configuration loaded', { config: hive.getConfig() });
 
   // ===== 1. Authentication Module Demo =====
   logger.info('=== Authentication Module Demo ===');
-  
+
   const authModule = new AuthModule({
     secretKey: hive.getConfig().auth.secretKey,
-    tokenExpiration: 3600
+    tokenExpiration: 3600,
   });
   hive.registerModule('auth', authModule);
 
   try {
     // Register a new user
-    const user = await authModule.register('john_doe', 'john@example.com', 'password123', ['user', 'admin']);
+    const user = await authModule.register('john_doe', 'john@example.com', 'password123', [
+      'user',
+      'admin',
+    ]);
     logger.info('User registered successfully', { userId: user.id, username: user.username });
 
     // Login
@@ -68,11 +70,11 @@ async function main() {
 
   // ===== 2. Logging Module Demo =====
   logger.info('=== Logging Module Demo ===');
-  
+
   const loggingModule = new LoggingModule({
     minLevel: LogLevel.INFO,
     enableConsole: true,
-    enableFile: false // Set to true to enable file logging
+    enableFile: false, // Set to true to enable file logging
   });
   hive.registerModule('logging', loggingModule);
 
@@ -89,35 +91,38 @@ async function main() {
       type: 'string',
       min: 3,
       max: 20,
-      pattern: /^[a-zA-Z0-9_]+$/
+      pattern: /^[a-zA-Z0-9_]+$/,
     },
     email: {
       required: true,
       type: 'string',
-      custom: (value: string) => Validator.email(value) || 'Invalid email format'
+      custom: (value: string) => Validator.email(value) || 'Invalid email format',
     },
     age: {
       type: 'number',
       min: 18,
-      max: 120
-    }
+      max: 120,
+    },
   });
 
   // Valid data
   const validData = {
     username: 'test_user',
     email: 'test@example.com',
-    age: 25
+    age: 25,
   };
 
   const validationResult = userValidator.validate(validData);
-  logger.info('Validation result', { valid: validationResult.valid, errors: validationResult.errors });
+  logger.info('Validation result', {
+    valid: validationResult.valid,
+    errors: validationResult.errors,
+  });
 
   // Invalid data
   const invalidData = {
     username: 'ab', // too short
     email: 'not-an-email',
-    age: 15 // too young
+    age: 15, // too young
   };
 
   const invalidResult = userValidator.validate(invalidData);
@@ -179,7 +184,7 @@ async function main() {
         message: error.message,
         code: error.code,
         statusCode: error.statusCode,
-        details: error.details
+        details: error.details,
       });
     }
   }
@@ -191,7 +196,7 @@ async function main() {
       logger.error('Caught not found error', {
         message: error.message,
         code: error.code,
-        statusCode: error.statusCode
+        statusCode: error.statusCode,
       });
     }
   }
@@ -207,11 +212,14 @@ async function main() {
     name: 'User Service',
     version: '1.0.0',
     endpoints: ['http://localhost:3001/users'],
-    health: async () => true
+    health: async () => true,
   });
 
   const services = microserviceModule.getAllServices();
-  logger.info('Registered services', { count: services.length, services: services.map(s => s.name) });
+  logger.info('Registered services', {
+    count: services.length,
+    services: services.map((s) => s.name),
+  });
 
   // ===== Summary =====
   logger.info('=== Framework Capabilities Summary ===');
@@ -224,11 +232,11 @@ async function main() {
   logger.info('✓ IoT device management');
   logger.info('✓ Microservices registry and discovery');
   logger.info('✓ Modular and extensible architecture');
-  
+
   logger.info('DomainHive Framework comprehensive example completed successfully!');
 }
 
-main().catch(error => {
+main().catch((error) => {
   logger.error('Fatal error in main', { error: error instanceof Error ? error.message : error });
   process.exit(1);
 });

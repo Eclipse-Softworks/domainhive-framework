@@ -30,9 +30,9 @@ export class HttpClient {
       timeout: 30000,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'DomainHive-Framework/1.0.0'
+        'User-Agent': 'DomainHive-Framework/1.0.0',
       },
-      ...config
+      ...config,
     };
   }
 
@@ -44,13 +44,13 @@ export class HttpClient {
 
     const mergedHeaders = {
       ...this.config.headers,
-      ...options.headers
+      ...options.headers,
     };
 
     const requestOptions: http.RequestOptions = {
       method: options.method || 'GET',
       headers: mergedHeaders,
-      timeout: options.timeout || this.config.timeout
+      timeout: options.timeout || this.config.timeout,
     };
 
     return new Promise((resolve, reject) => {
@@ -63,7 +63,7 @@ export class HttpClient {
 
         res.on('end', () => {
           try {
-            const parsedData = mergedHeaders['Content-Type']?.includes('application/json') 
+            const parsedData = mergedHeaders['Content-Type']?.includes('application/json')
               ? JSON.parse(data || '{}')
               : data;
 
@@ -71,7 +71,7 @@ export class HttpClient {
               status: res.statusCode || 0,
               statusText: res.statusMessage || '',
               headers: res.headers as Record<string, string>,
-              data: parsedData
+              data: parsedData,
             };
 
             if (res.statusCode && res.statusCode >= 200 && res.statusCode < 300) {
@@ -95,9 +95,8 @@ export class HttpClient {
       });
 
       if (options.body) {
-        const bodyString = typeof options.body === 'string' 
-          ? options.body 
-          : JSON.stringify(options.body);
+        const bodyString =
+          typeof options.body === 'string' ? options.body : JSON.stringify(options.body);
         req.write(bodyString);
       }
 
@@ -105,23 +104,41 @@ export class HttpClient {
     });
   }
 
-  async get<T = any>(url: string, options: Omit<RequestOptions, 'method' | 'body'> = {}): Promise<HttpResponse<T>> {
+  async get<T = any>(
+    url: string,
+    options: Omit<RequestOptions, 'method' | 'body'> = {}
+  ): Promise<HttpResponse<T>> {
     return this.request<T>(url, { ...options, method: 'GET' });
   }
 
-  async post<T = any>(url: string, body?: any, options: Omit<RequestOptions, 'method' | 'body'> = {}): Promise<HttpResponse<T>> {
+  async post<T = any>(
+    url: string,
+    body?: any,
+    options: Omit<RequestOptions, 'method' | 'body'> = {}
+  ): Promise<HttpResponse<T>> {
     return this.request<T>(url, { ...options, method: 'POST', body });
   }
 
-  async put<T = any>(url: string, body?: any, options: Omit<RequestOptions, 'method' | 'body'> = {}): Promise<HttpResponse<T>> {
+  async put<T = any>(
+    url: string,
+    body?: any,
+    options: Omit<RequestOptions, 'method' | 'body'> = {}
+  ): Promise<HttpResponse<T>> {
     return this.request<T>(url, { ...options, method: 'PUT', body });
   }
 
-  async delete<T = any>(url: string, options: Omit<RequestOptions, 'method' | 'body'> = {}): Promise<HttpResponse<T>> {
+  async delete<T = any>(
+    url: string,
+    options: Omit<RequestOptions, 'method' | 'body'> = {}
+  ): Promise<HttpResponse<T>> {
     return this.request<T>(url, { ...options, method: 'DELETE' });
   }
 
-  async patch<T = any>(url: string, body?: any, options: Omit<RequestOptions, 'method' | 'body'> = {}): Promise<HttpResponse<T>> {
+  async patch<T = any>(
+    url: string,
+    body?: any,
+    options: Omit<RequestOptions, 'method' | 'body'> = {}
+  ): Promise<HttpResponse<T>> {
     return this.request<T>(url, { ...options, method: 'PATCH', body });
   }
 

@@ -7,7 +7,12 @@ export class DomainHiveError extends Error {
   public statusCode: number;
   public details?: any;
 
-  constructor(message: string, code: string = 'UNKNOWN_ERROR', statusCode: number = 500, details?: any) {
+  constructor(
+    message: string,
+    code: string = 'UNKNOWN_ERROR',
+    statusCode: number = 500,
+    details?: any
+  ) {
     super(message);
     this.name = this.constructor.name;
     this.code = code;
@@ -23,7 +28,7 @@ export class DomainHiveError extends Error {
       code: this.code,
       statusCode: this.statusCode,
       details: this.details,
-      stack: this.stack
+      stack: this.stack,
     };
   }
 }
@@ -82,14 +87,14 @@ export class ServiceUnavailableError extends DomainHiveError {
 export function asyncHandler<T extends (...args: any[]) => Promise<any>>(
   fn: T
 ): (...args: Parameters<T>) => Promise<ReturnType<T>> {
-  return async function(...args: Parameters<T>): Promise<ReturnType<T>> {
+  return async function (...args: Parameters<T>): Promise<ReturnType<T>> {
     try {
       return await fn(...args);
     } catch (error) {
       if (error instanceof DomainHiveError) {
         throw error;
       }
-      
+
       // Wrap unknown errors
       throw new DomainHiveError(
         error instanceof Error ? error.message : 'An unknown error occurred',

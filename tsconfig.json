@@ -8,9 +8,17 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "declaration": true,
-    "types": ["node", "mqtt"],
+    "declarationMap": true,
+    "sourceMap": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "types": ["node", "mqtt", "jest"],
     "typeRoots": ["./node_modules/@types"]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

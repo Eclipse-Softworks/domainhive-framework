@@ -12,9 +12,9 @@ async function main() {
     mqtt: {
       brokerUrl: 'mqtt://localhost:1883',
       options: {
-        clientId: 'domainhive-client'
-      }
-    }
+        clientId: 'domainhive-client',
+      },
+    },
   });
 
   const iotModule = new IoTModule();
@@ -26,15 +26,15 @@ async function main() {
       protocol: 'mqtt',
       connectionConfig: {
         brokerUrl: hive.getConfig().mqtt.brokerUrl,
-        options: hive.getConfig().mqtt.options
-      }
+        options: hive.getConfig().mqtt.options,
+      },
     });
 
     console.log('Device connected:', device);
 
     await iotModule.sendToDevice('device1', {
       topic: 'sensors/temperature',
-      message: { value: 25.5, unit: 'C' }
+      message: { value: 25.5, unit: 'C' },
     });
   } catch (error) {
     console.error('Error:', error);

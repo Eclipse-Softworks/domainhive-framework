@@ -70,7 +70,7 @@ export class DatabaseModule extends EventEmitter {
           password: this.config.password,
           max: this.config.poolSize || 10,
           ssl: this.config.ssl ? { rejectUnauthorized: false } : false,
-          ...this.config.options
+          ...this.config.options,
         };
 
     this.pgPool = new PgPool(poolConfig);
@@ -78,12 +78,13 @@ export class DatabaseModule extends EventEmitter {
   }
 
   private async connectMongoDB(): Promise<void> {
-    const uri = this.config.connectionString ||
+    const uri =
+      this.config.connectionString ||
       `mongodb://${this.config.username}:${this.config.password}@${this.config.host}:${this.config.port || 27017}/${this.config.database}`;
 
     const options: MongoClientOptions = {
       maxPoolSize: this.config.poolSize || 10,
-      ...this.config.options
+      ...this.config.options,
     };
 
     this.mongoClient = new MongoClient(uri, options);
@@ -102,7 +103,7 @@ export class DatabaseModule extends EventEmitter {
           password: this.config.password,
           connectionLimit: this.config.poolSize || 10,
           ssl: this.config.ssl ? {} : undefined,
-          ...this.config.options
+          ...this.config.options,
         };
 
     this.mysqlPool = createPool(poolConfig);

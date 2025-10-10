@@ -37,7 +37,7 @@ export class AuthModule extends EventEmitter {
     this.config = {
       tokenExpiration: 3600,
       refreshTokenExpiration: 604800,
-      ...config
+      ...config,
     };
   }
 
@@ -56,7 +56,7 @@ export class AuthModule extends EventEmitter {
     const fullPayload: TokenPayload = {
       ...payload,
       iat: now,
-      exp: now + this.config.tokenExpiration!
+      exp: now + this.config.tokenExpiration!,
     };
 
     // Create token: base64(payload).signature
@@ -68,7 +68,7 @@ export class AuthModule extends EventEmitter {
 
     const token = `${payloadStr}.${signature}`;
     this.tokens.set(token, fullPayload);
-    
+
     return token;
   }
 
@@ -78,7 +78,7 @@ export class AuthModule extends EventEmitter {
   private verifyToken(token: string): TokenPayload | null {
     try {
       const [payloadStr, signature] = token.split('.');
-      
+
       // Verify signature
       const expectedSignature = crypto
         .createHmac('sha256', this.config.secretKey)
@@ -90,9 +90,7 @@ export class AuthModule extends EventEmitter {
       }
 
       // Decode payload
-      const payload: TokenPayload = JSON.parse(
-        Buffer.from(payloadStr, 'base64').toString('utf-8')
-      );
+      const payload: TokenPayload = JSON.parse(Buffer.from(payloadStr, 'base64').toString('utf-8'));
 
       // Check expiration
       const now = Math.floor(Date.now() / 1000);
@@ -110,10 +108,15 @@ export class AuthModule extends EventEmitter {
   /**
    * Register a new user
    */
-  async register(username: string, email: string, password: string, roles: string[] = ['user']): Promise<User> {
+  async register(
+    username: string,
+    email: string,
+    password: string,
+    roles: string[] = ['user']
+  ): Promise<User> {
     // Check if user already exists
     const existingUser = Array.from(this.users.values()).find(
-      u => u.username === username || u.email === email
+      (u) => u.username === username || u.email === email
     );
 
     if (existingUser) {
@@ -126,14 +129,14 @@ export class AuthModule extends EventEmitter {
       username,
       email,
       roles,
-      metadata: {}
+      metadata: {},
     };
 
     this.users.set(userId, user);
     this.passwords.set(userId, this.hashPassword(password));
-    
+
     this.emit('userRegistered', user);
-    
+
     return user;
   }
 
@@ -142,8 +145,8 @@ export class AuthModule extends EventEmitter {
    */
   async login(username: string, password: string): Promise<{ user: User; token: string }> {
     // Find user
-    const user = Array.from(this.users.values()).find(u => u.username === username);
-    
+    const user = Array.from(this.users.values()).find((u) => u.username === username);
+
     if (!user) {
       throw new Error('Invalid credentials');
     }
@@ -160,7 +163,7 @@ export class AuthModule extends EventEmitter {
     const token = this.generateToken({
       userId: user.id,
       username: user.username,
-      roles: user.roles
+      roles: user.roles,
     });
 
     this.emit('userLoggedIn', user);
@@ -173,7 +176,7 @@ export class AuthModule extends EventEmitter {
    */
   async verifyAuth(token: string): Promise<User | null> {
     const payload = this.verifyToken(token);
-    
+
     if (!payload) {
       return null;
     }
@@ -200,7 +203,7 @@ export class AuthModule extends EventEmitter {
    * Get user by username
    */
   getUserByUsername(username: string): User | undefined {
-    return Array.from(this.users.values()).find(u => u.username === username);
+    return Array.from(this.users.values()).find((u) => u.username === username);
   }
 
   /**
@@ -208,16 +211,16 @@ export class AuthModule extends EventEmitter {
    */
   async updateUser(userId: string, updates: Partial<Omit<User, 'id'>>): Promise<User> {
     const user = this.users.get(userId);
-    
+
     if (!user) {
       throw new Error('User not found');
     }
 
     const updatedUser = { ...user, ...updates, id: userId };
     this.users.set(userId, updatedUser);
-    
+
     this.emit('userUpdated', updatedUser);
-    
+
     return updatedUser;
   }
 
@@ -227,7 +230,7 @@ export class AuthModule extends EventEmitter {
   async deleteUser(userId: string): Promise<void> {
     this.users.delete(userId);
     this.passwords.delete(userId);
-    
+
     this.emit('userDeleted', { userId });
   }
 
@@ -242,13 +245,13 @@ export class AuthModule extends EventEmitter {
    * Check if user has any of the specified roles
    */
   hasAnyRole(user: User, roles: string[]): boolean {
-    return roles.some(role => user.roles.includes(role));
+    return roles.some((role) => user.roles.includes(role));
   }
 
   /**
    * Check if user has all of the specified roles
    */
   hasAllRoles(user: User, roles: string[]): boolean {
-    return roles.every(role => user.roles.includes(role));
+    return roles.every((role) => user.roles.includes(role));
   }
 }
