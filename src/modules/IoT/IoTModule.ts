@@ -11,7 +11,7 @@ export class IoTModule extends EventEmitter {
     super();
     this.devices = new Map();
     this.protocols = new Map();
-    
+
     // Register default protocols
     this.registerProtocol(new MQTTProtocol());
   }
@@ -20,11 +20,14 @@ export class IoTModule extends EventEmitter {
     this.protocols.set(protocol.name, protocol);
   }
 
-  async connectDevice(deviceId: string, config: {
-    type: string;
-    protocol: string;
-    connectionConfig: any;
-  }): Promise<Device> {
+  async connectDevice(
+    deviceId: string,
+    config: {
+      type: string;
+      protocol: string;
+      connectionConfig: any;
+    }
+  ): Promise<Device> {
     const protocol = this.protocols.get(config.protocol);
     if (!protocol) {
       throw new Error(`Protocol ${config.protocol} not supported`);
@@ -38,7 +41,7 @@ export class IoTModule extends EventEmitter {
       status: 'connected',
       protocol: config.protocol,
       lastSeen: new Date(),
-      metadata: {}
+      metadata: {},
     };
 
     this.devices.set(deviceId, device);

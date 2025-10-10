@@ -38,8 +38,8 @@ export class CacheModule extends EventEmitter {
       redis: config.redis,
       memory: {
         maxSize: config.memory?.maxSize || 1000,
-        ttl: config.memory?.ttl || 3600
-      }
+        ttl: config.memory?.ttl || 3600,
+      },
     };
 
     if (this.config.type === 'memory') {
@@ -70,10 +70,10 @@ export class CacheModule extends EventEmitter {
       : {
           socket: {
             host: this.config.redis.host || 'localhost',
-            port: this.config.redis.port || 6379
+            port: this.config.redis.port || 6379,
           },
           password: this.config.redis.password,
-          database: this.config.redis.database || 0
+          database: this.config.redis.database || 0,
         };
 
     this.redisClient = createClient(options) as RedisClientType;
@@ -136,7 +136,7 @@ export class CacheModule extends EventEmitter {
 
   private setMemory(key: string, value: any, ttl?: number): void {
     const effectiveTtl = ttl || this.config.memory?.ttl || 3600;
-    const expiresAt = Date.now() + (effectiveTtl * 1000);
+    const expiresAt = Date.now() + effectiveTtl * 1000;
 
     if (this.memoryCache.size >= (this.config.memory?.maxSize || 1000)) {
       const firstKey = this.memoryCache.keys().next().value;
@@ -150,9 +150,7 @@ export class CacheModule extends EventEmitter {
 
   async get<T = any>(key: string): Promise<T | null> {
     try {
-      const value = this.config.type === 'redis'
-        ? await this.getRedis(key)
-        : this.getMemory(key);
+      const value = this.config.type === 'redis' ? await this.getRedis(key) : this.getMemory(key);
 
       this.emit('get', { key, found: value !== null });
       return value;
@@ -198,9 +196,8 @@ export class CacheModule extends EventEmitter {
 
   async delete(key: string): Promise<boolean> {
     try {
-      const result = this.config.type === 'redis'
-        ? await this.deleteRedis(key)
-        : this.deleteMemory(key);
+      const result =
+        this.config.type === 'redis' ? await this.deleteRedis(key) : this.deleteMemory(key);
 
       this.emit('delete', { key, deleted: result });
       return result;
@@ -226,9 +223,7 @@ export class CacheModule extends EventEmitter {
 
   async has(key: string): Promise<boolean> {
     try {
-      const result = this.config.type === 'redis'
-        ? await this.hasRedis(key)
-        : this.hasMemory(key);
+      const result = this.config.type === 'redis' ? await this.hasRedis(key) : this.hasMemory(key);
 
       return result;
     } catch (error) {

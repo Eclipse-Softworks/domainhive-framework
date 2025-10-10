@@ -2,7 +2,7 @@ export enum LogLevel {
   DEBUG = 'DEBUG',
   INFO = 'INFO',
   WARN = 'WARN',
-  ERROR = 'ERROR'
+  ERROR = 'ERROR',
 }
 
 export interface LogEntry {
@@ -21,22 +21,24 @@ export class Logger {
   constructor(context: string = 'App', minLevel: LogLevel = LogLevel.INFO) {
     this.context = context;
     this.minLevel = minLevel;
-    
+
     // Default console handler
     this.addHandler((entry) => {
       const levelColors: Record<LogLevel, string> = {
         DEBUG: '\x1b[36m',
         INFO: '\x1b[32m',
         WARN: '\x1b[33m',
-        ERROR: '\x1b[31m'
+        ERROR: '\x1b[31m',
       };
       const reset = '\x1b[0m';
       const color = levelColors[entry.level];
       const timestamp = entry.timestamp.toISOString();
       const context = entry.context ? `[${entry.context}]` : '';
       const metadata = entry.metadata ? ` ${JSON.stringify(entry.metadata)}` : '';
-      
-      console.log(`${color}${timestamp} ${entry.level}${reset} ${context} ${entry.message}${metadata}`);
+
+      console.log(
+        `${color}${timestamp} ${entry.level}${reset} ${context} ${entry.message}${metadata}`
+      );
     });
   }
 
@@ -53,10 +55,10 @@ export class Logger {
       level,
       message,
       context: this.context,
-      metadata
+      metadata,
     };
 
-    this.handlers.forEach(handler => handler(entry));
+    this.handlers.forEach((handler) => handler(entry));
   }
 
   addHandler(handler: (entry: LogEntry) => void): void {

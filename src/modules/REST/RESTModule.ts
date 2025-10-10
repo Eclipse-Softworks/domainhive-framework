@@ -44,9 +44,13 @@ export class RESTModule extends EventEmitter {
       host: config.host || '0.0.0.0',
       cors: config.cors || { origin: '*', credentials: true },
       helmet: config.helmet !== false,
-      rateLimit: config.rateLimit || { windowMs: 15 * 60 * 1000, max: 100, message: 'Too many requests' },
+      rateLimit: config.rateLimit || {
+        windowMs: 15 * 60 * 1000,
+        max: 100,
+        message: 'Too many requests',
+      },
       bodyLimit: config.bodyLimit || '10mb',
-      enableLogging: config.enableLogging !== false
+      enableLogging: config.enableLogging !== false,
     };
 
     this.app = express();
@@ -72,7 +76,7 @@ export class RESTModule extends EventEmitter {
             method: req.method,
             path: req.path,
             status: res.statusCode,
-            duration
+            duration,
           });
         });
         next();
@@ -83,7 +87,7 @@ export class RESTModule extends EventEmitter {
       const limiter = rateLimit({
         windowMs: this.config.rateLimit.windowMs,
         max: this.config.rateLimit.max,
-        message: this.config.rateLimit.message
+        message: this.config.rateLimit.message,
       });
       this.app.use(limiter);
     }
@@ -95,7 +99,10 @@ export class RESTModule extends EventEmitter {
     existingRoutes.push(route);
     this.routes.set(routeKey, existingRoutes);
 
-    const handlers = [...(route.middleware || []), ...(Array.isArray(route.handler) ? route.handler : [route.handler])];
+    const handlers = [
+      ...(route.middleware || []),
+      ...(Array.isArray(route.handler) ? route.handler : [route.handler]),
+    ];
 
     switch (route.method) {
       case 'GET':
@@ -125,7 +132,7 @@ export class RESTModule extends EventEmitter {
   }
 
   addRoutes(routes: RouteHandler[]): void {
-    routes.forEach(route => this.addRoute(route));
+    routes.forEach((route) => this.addRoute(route));
   }
 
   createRouter(config: RouterConfig = {}): {
@@ -153,7 +160,7 @@ export class RESTModule extends EventEmitter {
       },
       patch: (path: string, ...handlers: RequestHandler[]) => {
         this.addRoute({ method: 'PATCH', path: prefix + path, handler: handlers, middleware });
-      }
+      },
     };
   }
 
@@ -176,7 +183,7 @@ export class RESTModule extends EventEmitter {
           this.emit('started', {
             host: this.config.host,
             port: this.config.port,
-            url: `http://${this.config.host}:${this.config.port}`
+            url: `http://${this.config.host}:${this.config.port}`,
           });
           resolve();
         });

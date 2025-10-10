@@ -7,7 +7,7 @@ export enum LogLevel {
   INFO = 1,
   WARN = 2,
   ERROR = 3,
-  FATAL = 4
+  FATAL = 4,
 }
 
 export interface LogEntry {
@@ -43,7 +43,7 @@ export class LoggingModule extends EventEmitter {
       logDirectory: './logs',
       maxFileSize: 10 * 1024 * 1024, // 10MB
       maxFiles: 5,
-      ...config
+      ...config,
     };
 
     if (this.config.enableFile) {
@@ -53,7 +53,7 @@ export class LoggingModule extends EventEmitter {
 
   private initializeFileLogging(): void {
     const logDir = this.config.logDirectory!;
-    
+
     if (!fs.existsSync(logDir)) {
       fs.mkdirSync(logDir, { recursive: true });
     }
@@ -72,18 +72,19 @@ export class LoggingModule extends EventEmitter {
 
   private cleanupOldLogs(): void {
     const logDir = this.config.logDirectory!;
-    const files = fs.readdirSync(logDir)
-      .filter(f => f.startsWith('app-') && f.endsWith('.log'))
-      .map(f => ({
+    const files = fs
+      .readdirSync(logDir)
+      .filter((f) => f.startsWith('app-') && f.endsWith('.log'))
+      .map((f) => ({
         name: f,
         path: path.join(logDir, f),
-        time: fs.statSync(path.join(logDir, f)).mtime.getTime()
+        time: fs.statSync(path.join(logDir, f)).mtime.getTime(),
       }))
       .sort((a, b) => b.time - a.time);
 
     // Remove oldest files if exceeding maxFiles
     if (files.length > this.config.maxFiles!) {
-      files.slice(this.config.maxFiles!).forEach(file => {
+      files.slice(this.config.maxFiles!).forEach((file) => {
         fs.unlinkSync(file.path);
       });
     }
@@ -99,7 +100,7 @@ export class LoggingModule extends EventEmitter {
     const context = entry.context ? `[${entry.context}]` : '';
     const metadata = entry.metadata ? ` ${JSON.stringify(entry.metadata)}` : '';
     const error = entry.error ? `\n${entry.error.stack}` : '';
-    
+
     return `${timestamp} ${levelName} ${context} ${entry.message}${metadata}${error}`;
   }
 
@@ -109,11 +110,11 @@ export class LoggingModule extends EventEmitter {
       [LogLevel.INFO]: '\x1b[32m',
       [LogLevel.WARN]: '\x1b[33m',
       [LogLevel.ERROR]: '\x1b[31m',
-      [LogLevel.FATAL]: '\x1b[35m'
+      [LogLevel.FATAL]: '\x1b[35m',
     };
     const reset = '\x1b[0m';
     const color = levelColors[entry.level];
-    
+
     console.log(`${color}${this.formatLogEntry(entry)}${reset}`);
   }
 
@@ -132,7 +133,13 @@ export class LoggingModule extends EventEmitter {
     this.currentFileSize += logSize;
   }
 
-  private log(level: LogLevel, message: string, context?: string, metadata?: Record<string, any>, error?: Error): void {
+  private log(
+    level: LogLevel,
+    message: string,
+    context?: string,
+    metadata?: Record<string, any>,
+    error?: Error
+  ): void {
     if (!this.shouldLog(level)) return;
 
     const entry: LogEntry = {
@@ -141,7 +148,7 @@ export class LoggingModule extends EventEmitter {
       message,
       context,
       metadata,
-      error
+      error,
     };
 
     if (this.config.enableConsole) {

@@ -37,7 +37,7 @@ export class MQTTProtocol implements Protocol {
     this.client.on('message', (topic: string, message: Buffer) => {
       callback({
         topic,
-        message: JSON.parse(message.toString())
+        message: JSON.parse(message.toString()),
       });
     });
   }

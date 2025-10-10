@@ -17,7 +17,7 @@ export class ServiceRegistry {
   }
 
   discover(criteria: ServiceCriteria): Service[] {
-    return Array.from(this.services.values()).filter(service => {
+    return Array.from(this.services.values()).filter((service) => {
       if (criteria.name && service.name !== criteria.name) return false;
       if (criteria.version && service.version !== criteria.version) return false;
       return true;

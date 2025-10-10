@@ -14,11 +14,17 @@ export {
   pick,
   omit,
   chunk,
-  unique
+  unique,
 } from './helpers';
 
 // HTTP Client exports
-export { HttpClient, HttpClientConfig, RequestOptions, HttpResponse, httpClient } from './http-client';
+export {
+  HttpClient,
+  HttpClientConfig,
+  RequestOptions,
+  HttpResponse,
+  httpClient,
+} from './http-client';
 
 // Validator exports
 export {
@@ -27,7 +33,7 @@ export {
   ValidationSchema,
   ValidationError as ValidatorError,
   ValidationResult,
-  commonSchemas
+  commonSchemas,
 } from './validator';
 
 // Error exports
@@ -43,5 +49,5 @@ export {
   ServiceUnavailableError,
   asyncHandler,
   assert,
-  isErrorType
+  isErrorType,
 } from './errors';

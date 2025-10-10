@@ -35,23 +35,23 @@ export class GRPCModule extends EventEmitter {
         longs: String,
         enums: String,
         defaults: true,
-        oneofs: true
+        oneofs: true,
       },
       credentials: config.credentials || grpc.ServerCredentials.createInsecure(),
       maxReceiveMessageLength: config.maxReceiveMessageLength || 4 * 1024 * 1024,
-      maxSendMessageLength: config.maxSendMessageLength || 4 * 1024 * 1024
+      maxSendMessageLength: config.maxSendMessageLength || 4 * 1024 * 1024,
     };
 
     this.server = new grpc.Server({
       'grpc.max_receive_message_length': this.config.maxReceiveMessageLength,
-      'grpc.max_send_message_length': this.config.maxSendMessageLength
+      'grpc.max_send_message_length': this.config.maxSendMessageLength,
     });
 
     this.loadProtoFiles();
   }
 
   private loadProtoFiles(): void {
-    this.config.protoFiles.forEach(protoFile => {
+    this.config.protoFiles.forEach((protoFile) => {
       try {
         const packageDefinition = protoLoader.loadSync(protoFile, this.config.protoOptions);
         const grpcObject = grpc.loadPackageDefinition(packageDefinition);
@@ -76,7 +76,11 @@ export class GRPCModule extends EventEmitter {
     }
   }
 
-  addService(serviceName: string, serviceDefinition: grpc.ServiceDefinition, implementation: grpc.UntypedServiceImplementation): void {
+  addService(
+    serviceName: string,
+    serviceDefinition: grpc.ServiceDefinition,
+    implementation: grpc.UntypedServiceImplementation
+  ): void {
     try {
       this.server.addService(serviceDefinition, implementation);
       this.services.set(serviceName, { name: serviceName, implementation });
@@ -106,7 +110,7 @@ export class GRPCModule extends EventEmitter {
       }
 
       const bindAddress = `${this.config.host}:${this.config.port}`;
-      
+
       this.server.bindAsync(bindAddress, this.config.credentials, (error, port) => {
         if (error) {
           this.emit('error', error);
@@ -119,7 +123,7 @@ export class GRPCModule extends EventEmitter {
         this.emit('started', {
           host: this.config.host,
           port: port,
-          address: `${this.config.host}:${port}`
+          address: `${this.config.host}:${port}`,
         });
         resolve();
       });
@@ -156,13 +160,17 @@ export class GRPCModule extends EventEmitter {
       isRunning: this.isRunning,
       host: this.config.host,
       port: this.config.port,
-      services: Array.from(this.services.keys())
+      services: Array.from(this.services.keys()),
     };
   }
 
   static createClient<T>(
     address: string,
-    serviceConstructor: new (address: string, credentials: grpc.ChannelCredentials, options?: object) => T,
+    serviceConstructor: new (
+      address: string,
+      credentials: grpc.ChannelCredentials,
+      options?: object
+    ) => T,
     credentials?: grpc.ChannelCredentials,
     options?: object
   ): T {

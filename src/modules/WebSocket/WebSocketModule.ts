@@ -26,7 +26,12 @@ export interface ConnectionInfo {
 
 export class WebSocketModule extends EventEmitter {
   private wss: WebSocketServer | null = null;
-  private config: WebSocketConfig & { port: number; path: string; maxPayload: number; perMessageDeflate: boolean };
+  private config: WebSocketConfig & {
+    port: number;
+    path: string;
+    maxPayload: number;
+    perMessageDeflate: boolean;
+  };
   private connections: Map<string, { socket: WebSocket; info: ConnectionInfo }> = new Map();
   private messageHandlers: Map<string, (data: any, connectionId: string) => void> = new Map();
   private connectionIdCounter: number = 0;
@@ -39,7 +44,7 @@ export class WebSocketModule extends EventEmitter {
       path: config.path || '/',
       verifyClient: config.verifyClient,
       maxPayload: config.maxPayload || 1024 * 1024,
-      perMessageDeflate: config.perMessageDeflate !== false
+      perMessageDeflate: config.perMessageDeflate !== false,
     };
   }
 
@@ -50,7 +55,7 @@ export class WebSocketModule extends EventEmitter {
           path: this.config.path,
           maxPayload: this.config.maxPayload,
           perMessageDeflate: this.config.perMessageDeflate,
-          verifyClient: this.config.verifyClient
+          verifyClient: this.config.verifyClient,
         };
 
         if (this.config.server) {
@@ -67,7 +72,7 @@ export class WebSocketModule extends EventEmitter {
             id: connectionId,
             remoteAddress: request.socket.remoteAddress,
             connectedAt: Date.now(),
-            metadata: {}
+            metadata: {},
           };
 
           this.connections.set(connectionId, { socket, info });
@@ -101,11 +106,10 @@ export class WebSocketModule extends EventEmitter {
         this.wss.on('listening', () => {
           this.emit('started', {
             port: this.config.port,
-            path: this.config.path
+            path: this.config.path,
           });
           resolve();
         });
-
       } catch (error) {
         reject(error);
       }
@@ -138,7 +142,7 @@ export class WebSocketModule extends EventEmitter {
 
   private handleMessage(connectionId: string, message: WebSocketMessage): void {
     const handler = this.messageHandlers.get(message.type);
-    
+
     if (handler) {
       handler(message.data, connectionId);
     }
@@ -152,14 +156,14 @@ export class WebSocketModule extends EventEmitter {
 
   send(connectionId: string, message: WebSocketMessage): boolean {
     const connection = this.connections.get(connectionId);
-    
+
     if (!connection || connection.socket.readyState !== WebSocket.OPEN) {
       return false;
     }
 
     const messageWithTimestamp = {
       ...message,
-      timestamp: message.timestamp || Date.now()
+      timestamp: message.timestamp || Date.now(),
     };
 
     connection.socket.send(JSON.stringify(messageWithTimestamp));
@@ -170,7 +174,7 @@ export class WebSocketModule extends EventEmitter {
     let sentCount = 0;
     const messageWithTimestamp = {
       ...message,
-      timestamp: message.timestamp || Date.now()
+      timestamp: message.timestamp || Date.now(),
     };
 
     this.connections.forEach(({ socket }, connectionId) => {
@@ -188,7 +192,7 @@ export class WebSocketModule extends EventEmitter {
   }
 
   getAllConnections(): ConnectionInfo[] {
-    return Array.from(this.connections.values()).map(c => c.info);
+    return Array.from(this.connections.values()).map((c) => c.info);
   }
 
   getConnectionCount(): number {
@@ -197,7 +201,7 @@ export class WebSocketModule extends EventEmitter {
 
   disconnect(connectionId: string): boolean {
     const connection = this.connections.get(connectionId);
-    
+
     if (!connection) {
       return false;
     }
@@ -209,7 +213,7 @@ export class WebSocketModule extends EventEmitter {
 
   setConnectionMetadata(connectionId: string, key: string, value: any): boolean {
     const connection = this.connections.get(connectionId);
-    
+
     if (!connection) {
       return false;
     }
