@@ -1,35 +1,194 @@
 # DomainHive Framework - Quick Start
 
-Get up and running with DomainHive Framework in 5 minutes!
+**Get a complete backend running in 5 minutes!** Perfect for hackathons, MVPs, and rapid prototyping.
 
-## Installation
+## 🚀 Instant Setup
+
+### Option 1: Run the Pre-Built Server (Fastest)
 
 ```bash
+# Clone the repository
+git clone https://github.com/Eclipse-Softworks/domainhive-framework.git
+cd domainhive-framework
+
+# Install and build
+npm install
+
+# Run the full-featured backend server
+npm run server
+```
+
+**That's it!** You now have a complete backend with:
+- ✅ Auth (login, register, verify token)
+- ✅ User management with caching
+- ✅ Real-time notifications
+- ✅ Chat with rooms (REST + WebSocket)
+- ✅ GraphQL API
+- ✅ WebSocket events
+
+Visit: http://localhost:3000 for REST API  
+Visit: http://localhost:3000/graphql for GraphQL  
+Connect: ws://localhost:8080/ws for WebSocket
+
+Test credentials: `admin/admin123` or `user/user123`
+
+### Option 2: Install as Package
+
+```bash
+# Install in your project
 npm install domainhive-framework
 ```
 
-Or clone the repository:
+Then create your custom server (see examples below).
 
-```bash
-git clone https://github.com/Eclipse-Softworks/domainhive-framework.git
-cd domainhive-framework
-npm install
-npm run build
+## 📦 Hackathon-Ready Examples
+
+### Example 1: Chat Backend (2 minutes)
+
+Perfect for building a real-time chat application:
+
+```javascript
+const { WebSocketModule, CacheModule, logger } = require('domainhive-framework');
+
+async function chatServer() {
+  const cache = new CacheModule({ type: 'memory' });
+  await cache.connect();
+  
+  const ws = new WebSocketModule({ port: 8080 });
+  
+  // Handle chat messages
+  ws.onMessage('chat', async (data, connectionId) => {
+    const message = {
+      id: Date.now(),
+      username: data.username,
+      text: data.message,
+      room: data.room || 'general',
+      timestamp: Date.now()
+    };
+    
+    // Store messages
+    const key = `messages:${message.room}`;
+    const messages = await cache.get(key) || [];
+    messages.push(message);
+    await cache.set(key, messages, 3600);
+    
+    // Broadcast to all clients
+    ws.broadcast({ type: 'chat', data: message });
+  });
+  
+  await ws.start();
+  logger.info('💬 Chat server ready at ws://localhost:8080');
+}
+
+chatServer();
 ```
 
-## Basic Usage
+### Example 2: Auth + REST API (3 minutes)
 
-```typescript
-import { DomainHive, logger } from 'domainhive-framework';
+Complete authentication system:
 
-// Initialize framework
-const hive = DomainHive.getInstance();
+```javascript
+const { RESTModule, AuthModule, logger } = require('domainhive-framework');
 
-// Log a message
-logger.info('Hello from DomainHive!');
+async function authAPI() {
+  const auth = new AuthModule({ secretKey: 'my-secret-key' });
+  const rest = new RESTModule({ port: 3000 });
+  
+  // Create a test user
+  await auth.register('testuser', 'test@example.com', 'password123');
+  
+  // Login endpoint
+  rest.addRoute({
+    method: 'POST',
+    path: '/login',
+    handler: async (req, res) => {
+      const { username, password } = req.body;
+      const result = await auth.login(username, password);
+      res.json({ success: true, ...result });
+    }
+  });
+  
+  // Protected endpoint
+  rest.addRoute({
+    method: 'GET',
+    path: '/me',
+    handler: async (req, res) => {
+      const token = req.headers.authorization?.replace('Bearer ', '');
+      const user = await auth.verifyAuth(token);
+      res.json({ user });
+    }
+  });
+  
+  await rest.start();
+  logger.info('🔐 Auth API ready at http://localhost:3000');
+}
+
+authAPI();
 ```
 
-## Common Use Cases
+### Example 3: Notification System (3 minutes)
+
+Push notifications with real-time updates:
+
+```javascript
+const { RESTModule, WebSocketModule, CacheModule, logger } = require('domainhive-framework');
+
+async function notificationServer() {
+  const cache = new CacheModule({ type: 'memory' });
+  await cache.connect();
+  
+  const rest = new RESTModule({ port: 3000 });
+  const ws = new WebSocketModule({ port: 8080 });
+  
+  // Send notification
+  rest.addRoute({
+    method: 'POST',
+    path: '/notify',
+    handler: async (req, res) => {
+      const { title, message, type = 'info' } = req.body;
+      
+      const notification = {
+        id: Date.now(),
+        title,
+        message,
+        type,
+        timestamp: Date.now()
+      };
+      
+      // Store notification
+      const notifications = await cache.get('notifications') || [];
+      notifications.push(notification);
+      await cache.set('notifications', notifications, 3600);
+      
+      // Broadcast to all connected clients
+      ws.broadcast({ type: 'notification', data: notification });
+      
+      res.json({ success: true, notification });
+    }
+  });
+  
+  // Get all notifications
+  rest.addRoute({
+    method: 'GET',
+    path: '/notifications',
+    handler: async (req, res) => {
+      const notifications = await cache.get('notifications') || [];
+      res.json({ notifications });
+    }
+  });
+  
+  await rest.start();
+  await ws.start();
+  
+  logger.info('🔔 Notification server ready!');
+  logger.info('   REST: http://localhost:3000');
+  logger.info('   WebSocket: ws://localhost:8080');
+}
+
+notificationServer();
+```
+
+## 🎯 Common Hackathon Use Cases
 
 ### 1. REST API Server
 

@@ -1,21 +1,42 @@
 # DomainHive Framework
 ![1](https://github.com/user-attachments/assets/cc03469d-df9f-4fca-ab34-c95c0e74e0e7)
 
+**The Ultimate Hackathon Backend Framework**
 
-**DomainHive Framework** is an open-source, domain-specific framework designed to empower developers with a plug-and-play, modular architecture for niche markets such as IoT, mobile development, and microservices. Developed and maintained by **Eclipse Softworks (ES)**, DomainHive Framework simplifies rapid prototyping, integration, and scalable application development by providing robust APIs, reusable components, and comprehensive documentation.
+**DomainHive Framework** is a production-ready, full-stack backend framework designed for developers who need to build robust backend services quickly - perfect for hackathons, MVPs, and rapid prototyping. Install it, configure it in minutes, and focus on your frontend while we handle the entire backend infrastructure.
+
+**Why DomainHive for Hackathons?**
+- ⚡ **5-Minute Setup**: `npm install domainhive-framework` and you're ready to go
+- 🚀 **Pre-Built Endpoints**: Auth, notifications, chat, data storage - all ready out of the box
+- 🔌 **Multiple Protocols**: REST, GraphQL, WebSocket, gRPC - choose what fits your needs
+- 💾 **Database Ready**: PostgreSQL, MongoDB, MySQL support with zero configuration
+- 🔐 **Security Built-In**: JWT-like authentication, rate limiting, CORS, helmet protection
+- 📡 **Real-Time Ready**: WebSocket support for chat apps, notifications, and live updates
+- 📦 **All-in-One Package**: No need to install Express, Socket.io, or any other dependencies
+
+Developed and maintained by **Eclipse Softworks (ES)**, DomainHive Framework eliminates the repetitive setup work so you can focus on building unique features that win hackathons.
 
 ---
+
+## 🚀 Quick Links for Hackathons
+
+- ⚡ [60-Second Minimal Example](./MINIMAL_EXAMPLE.md) - Absolute simplest start
+- 🏁 [5-Minute Quick Start](#quick-start-for-hackathons-5-minutes) - Full featured start
+- 🏆 [Hackathon Guide](./HACKATHON_GUIDE.md) - Copy-paste ready patterns for common projects
+- 💬 [Chat Backend Example](./HACKATHON_GUIDE.md#pattern-2-real-time-chat-application)
+- 🔐 [Auth + API Example](./HACKATHON_GUIDE.md#pattern-1-social-media-backend)
+- 🔔 [Notification System](./HACKATHON_GUIDE.md#pattern-3-notification-system)
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [Key Features](#key-features)
-- [Architecture](#architecture)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Project Structure](#project-structure)
 - [Usage](#usage)
+- [Pre-Built Server Endpoints](#pre-built-server-endpoints)
 - [Documentation](#documentation)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
@@ -26,17 +47,35 @@
 
 ## Overview
 
-DomainHive Framework is a comprehensive, enterprise-ready backend framework designed to empower developers and corporations to build scalable applications efficiently. It provides a complete suite of backend capabilities including REST APIs, GraphQL, gRPC, real-time WebSocket communication, database connectivity, caching, and more. The framework is built with TypeScript for type safety and follows industry best practices.
+DomainHive Framework is your complete backend-in-a-box solution. Whether you're at a hackathon racing against the clock, building an MVP for a startup pitch, or prototyping a new idea, DomainHive gives you a production-ready backend in minutes, not days.
 
-Key highlights:
+### Perfect for Hackathons
+
+Stop wasting time setting up Express, configuring WebSockets, or implementing authentication from scratch. DomainHive provides:
+
+- **Ready-to-Use Server**: Run `npm run server` and get a fully functional backend with 15+ endpoints
+- **Common Features Built-In**: User auth, real-time chat, notifications, data storage
+- **Copy-Paste Ready**: All examples work out of the box - just customize to your needs
+- **Frontend-Friendly**: Clean REST APIs, GraphQL support, and real-time WebSocket events
+
+### Key Highlights
+
 - **Complete Backend Solution:** Everything needed to build production-ready backend systems
 - **Multi-Protocol Support:** REST, GraphQL, gRPC, WebSocket, and MQTT protocols
-- **Database Agnostic:** Support for PostgreSQL, MongoDB, and MySQL
-- **Built for Scale:** Caching, rate limiting, security middleware, and optimized performance
-- **Developer Friendly:** Clean APIs, comprehensive documentation, and TypeScript support
-- **Enterprise Ready:** Suitable for startups to large corporations building mission-critical applications
+- **Database Agnostic:** Support for PostgreSQL, MongoDB, and MySQL with zero configuration
+- **Built for Speed:** Get your backend running in under 5 minutes
+- **Developer Friendly:** TypeScript support, clean APIs, comprehensive documentation
+- **Real-Time Ready:** WebSocket server for chat apps, live updates, and notifications
+- **Enterprise Ready:** Production-grade security, rate limiting, caching, and error handling
 
-By leveraging DomainHive Framework, teams can reduce development time, maintain high code quality, and build robust backend systems without reinventing the wheel.
+### Common Hackathon Use Cases
+
+✅ **Social Media App**: Auth + user profiles + real-time feed  
+✅ **Chat Application**: WebSocket messaging + chat rooms + notifications  
+✅ **Collaboration Tool**: Real-time updates + user management + data sync  
+✅ **IoT Dashboard**: MQTT support + data visualization + real-time monitoring  
+✅ **API Gateway**: REST + GraphQL + gRPC all in one place  
+✅ **Mobile Backend**: Complete backend for iOS/Android apps
 
 ---
 
@@ -172,35 +211,113 @@ This design enables independent development, testing, and deployment of each mod
 
 ## Getting Started
 
+### Quick Start for Hackathons (5 Minutes)
+
+Get a full backend running in 5 minutes:
+
+```bash
+# Install the framework
+npm install domainhive-framework
+
+# Create a new file: server.js
+```
+
+```javascript
+const { 
+  DomainHive, 
+  RESTModule, 
+  WebSocketModule, 
+  CacheModule, 
+  AuthModule, 
+  logger 
+} = require('domainhive-framework');
+
+async function startServer() {
+  const hive = DomainHive.getInstance();
+  
+  // Initialize modules
+  const cache = new CacheModule({ type: 'memory' });
+  await cache.connect();
+  
+  const auth = new AuthModule({ secretKey: 'your-secret-key' });
+  await auth.register('admin', 'admin@test.com', 'admin123', ['admin']);
+  
+  const rest = new RESTModule({ port: 3000 });
+  const ws = new WebSocketModule({ port: 8080 });
+  
+  // Add auth endpoints
+  rest.addRoute({
+    method: 'POST',
+    path: '/auth/login',
+    handler: async (req, res) => {
+      const { username, password } = req.body;
+      const result = await auth.login(username, password);
+      res.json({ success: true, ...result });
+    }
+  });
+  
+  // Add chat via WebSocket
+  ws.onMessage('chat', (data, connectionId) => {
+    ws.broadcast({ type: 'chat', data });
+  });
+  
+  await rest.start();
+  await ws.start();
+  
+  logger.info('🚀 Backend ready at http://localhost:3000');
+  logger.info('💬 WebSocket ready at ws://localhost:8080');
+}
+
+startServer();
+```
+
+```bash
+# Run your server
+node server.js
+```
+
+**That's it!** You now have auth, WebSocket chat, and a REST API running.
+
 ### Prerequisites
 
-- **Operating System:** Windows 10 or later.
-- **Git:** [Git for Windows](https://gitforwindows.org/)
-- **Node.js:** Version 16 or above (if using JavaScript/TypeScript).
-- **Visual Studio Code:** Recommended IDE for development.
+- **Node.js:** Version 16 or above
+- **npm or yarn:** Package manager
 
-### Installation
+### Installation Options
 
-1. **Clone the Repository:**
-   ```bash
-   git clone https://github.com/Eclipse-Softworks/domainhive-framework.git
-   cd domainhive-framework
-   ```
+#### Option 1: Use as NPM Package (Recommended for Hackathons)
 
-2. **Install Dependencies:**
-   ```bash
-   npm install
-   ```
+```bash
+# Install in your project
+npm install domainhive-framework
 
-3. **Build the Framework:**
-   ```bash
-   npm run build
-   ```
+# Use pre-built features
+```
 
-4. **Run Examples:**
-   ```bash
-   npm run example
-   ```
+#### Option 2: Clone and Customize
+
+```bash
+# Clone the repository
+git clone https://github.com/Eclipse-Softworks/domainhive-framework.git
+cd domainhive-framework
+
+# Install dependencies
+npm install
+
+# Run the full example server
+npm run server
+
+# Visit http://localhost:3000 to see all endpoints
+```
+
+The example server includes:
+- ✅ Auth endpoints (login, register, verify)
+- ✅ User management
+- ✅ Real-time notifications
+- ✅ Chat with rooms
+- ✅ Data storage
+- ✅ GraphQL API
+- ✅ WebSocket events
 
 ### Project Structure
 
@@ -235,37 +352,232 @@ domainhive-framework/
 
 ## Usage
 
-After installation, you can start using the framework right away:
+### Hackathon-Ready Examples
 
-```typescript
-import { DomainHive, logger, AuthModule } from 'domainhive-framework';
+#### 1. Simple Chat Backend (2 minutes)
 
-const hive = DomainHive.getInstance();
-logger.info('Framework ready!');
+```javascript
+const { WebSocketModule, CacheModule } = require('domainhive-framework');
+
+async function chatServer() {
+  const cache = new CacheModule({ type: 'memory' });
+  await cache.connect();
+  
+  const ws = new WebSocketModule({ port: 8080 });
+  
+  ws.onMessage('chat', async (data, connectionId) => {
+    const message = {
+      id: Date.now(),
+      username: data.username,
+      message: data.message,
+      timestamp: Date.now()
+    };
+    
+    // Store message
+    const messages = await cache.get('messages') || [];
+    messages.push(message);
+    await cache.set('messages', messages, 3600);
+    
+    // Broadcast to all
+    ws.broadcast({ type: 'chat', data: message });
+  });
+  
+  await ws.start();
+  console.log('Chat server ready! Connect to ws://localhost:8080');
+}
+
+chatServer();
 ```
 
-For comprehensive guides, see:
+#### 2. Auth + REST API (3 minutes)
 
+```javascript
+const { RESTModule, AuthModule } = require('domainhive-framework');
+
+async function apiServer() {
+  const auth = new AuthModule({ secretKey: 'my-secret' });
+  const rest = new RESTModule({ port: 3000 });
+  
+  // Register a test user
+  await auth.register('user', 'user@test.com', 'password123');
+  
+  // Login endpoint
+  rest.addRoute({
+    method: 'POST',
+    path: '/login',
+    handler: async (req, res) => {
+      const { username, password } = req.body;
+      const result = await auth.login(username, password);
+      res.json(result);
+    }
+  });
+  
+  // Protected endpoint
+  rest.addRoute({
+    method: 'GET',
+    path: '/profile',
+    handler: async (req, res) => {
+      const token = req.headers.authorization?.replace('Bearer ', '');
+      const user = await auth.verifyAuth(token);
+      res.json({ user });
+    }
+  });
+  
+  await rest.start();
+  console.log('API ready at http://localhost:3000');
+}
+
+apiServer();
+```
+
+#### 3. Full-Featured Backend (Run the Example)
+
+```bash
+npm run server
+```
+
+This starts a complete backend with:
+- **Auth**: Login, register, token verification
+- **Users**: Get user list with caching
+- **Notifications**: Create and retrieve notifications
+- **Chat**: REST and WebSocket messaging with rooms
+- **GraphQL**: Query users and data
+- **WebSocket**: Real-time events (ping, chat, broadcasts)
+
+### Documentation
+
+- **[Minimal Example](./MINIMAL_EXAMPLE.md):** ⚡ 60-second absolute minimum setup
+- **[Hackathon Guide](./HACKATHON_GUIDE.md):** 🏆 Copy-paste patterns for common hackathon projects
 - **[Quick Start Guide](./QUICK_START.md):** Get started in 5 minutes
+- **[Deployment Guide](./DEPLOYMENT.md):** 🚀 Deploy to Render, Railway, Heroku, etc.
 - **[Usage Guide](./USAGE_GUIDE.md):** Detailed documentation for all features
-- **[Example Projects](./src/examples/):** Practical implementations
+- **[Features List](./FEATURES.md):** Complete feature reference
+- **[Example Projects](./src/examples/):** Working code examples
 
-### Key Capabilities
+### Complete Feature Set
 
-- **REST API Server**: Build RESTful APIs with Express, routing, and middleware
-- **GraphQL Server**: Create GraphQL APIs with schema and resolvers
+- **REST API Server**: Express-based with routing, CORS, rate limiting, helmet security
+- **GraphQL Server**: Schema-based GraphQL with queries and mutations
 - **gRPC Server**: High-performance RPC with protocol buffers
-- **WebSocket Server**: Real-time bidirectional communication
-- **Database Support**: PostgreSQL, MongoDB, and MySQL connectors
+- **WebSocket Server**: Real-time bidirectional communication with event handling
+- **Database Support**: PostgreSQL, MongoDB, MySQL with connection pooling
 - **Caching**: Redis and in-memory caching with TTL support
-- **Authentication**: Secure JWT-like token authentication with RBAC
-- **Logging**: Structured logging with multiple levels and file support
-- **Validation**: Comprehensive data validation with custom rules
-- **HTTP Client**: Promise-based HTTP client with retry logic
-- **Utilities**: Common helpers (retry, debounce, uuid, sleep, etc.)
-- **Error Handling**: Custom error types with proper error management
-- **IoT Support**: Device management with MQTT protocol
+- **Authentication**: JWT-like tokens, user registration, RBAC (role-based access control)
+- **Logging**: Structured logging with file rotation and console output
+- **Validation**: Schema-based data validation with custom rules
+- **HTTP Client**: Retry logic, authentication, interceptors
+- **Utilities**: UUID, deep clone, debounce, throttle, retry, sleep
+- **Error Handling**: Custom error types with detailed messages
+- **IoT Support**: MQTT protocol for device communication
 - **Microservices**: Service registry and discovery
+
+---
+
+## Pre-Built Server Endpoints
+
+When you run `npm run server`, you get these endpoints ready to use:
+
+### Authentication Endpoints
+```
+POST   /auth/login           - Login with username/password
+GET    /auth/verify          - Verify JWT token
+```
+
+**Example Login:**
+```bash
+curl -X POST http://localhost:3000/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"admin123"}'
+```
+
+### User Management
+```
+GET    /api/users            - Get all users (with caching)
+```
+
+### Data Storage
+```
+POST   /api/data             - Store arbitrary data
+```
+
+### Notifications
+```
+GET    /api/notifications    - Get all notifications
+POST   /api/notifications    - Create notification (broadcasts via WebSocket)
+```
+
+**Example Create Notification:**
+```bash
+curl -X POST http://localhost:3000/api/notifications \
+  -H "Content-Type: application/json" \
+  -d '{"title":"New Alert","message":"Something happened!","type":"info"}'
+```
+
+### Chat System
+```
+GET    /api/messages         - Get messages by room (?room=general)
+POST   /api/messages         - Send message (broadcasts via WebSocket)
+```
+
+**Example Send Message:**
+```bash
+curl -X POST http://localhost:3000/api/messages \
+  -H "Content-Type: application/json" \
+  -d '{"username":"john","message":"Hello!","room":"general"}'
+```
+
+### GraphQL Endpoint
+```
+POST   /graphql              - GraphQL queries and mutations
+GET    /graphql              - GraphiQL interface (in browser)
+```
+
+**Example Query:**
+```graphql
+query {
+  users {
+    id
+    username
+    email
+    roles
+  }
+}
+```
+
+### WebSocket Events
+
+Connect to `ws://localhost:8080/ws` and use these events:
+
+```javascript
+// Client-side example
+const ws = new WebSocket('ws://localhost:8080/ws');
+
+// Listen for messages
+ws.onmessage = (event) => {
+  const { type, data } = JSON.parse(event.data);
+  console.log('Received:', type, data);
+};
+
+// Send events
+ws.send(JSON.stringify({ type: 'ping' }));
+ws.send(JSON.stringify({ 
+  type: 'chat', 
+  data: { username: 'john', message: 'Hello!', room: 'general' } 
+}));
+ws.send(JSON.stringify({ type: 'join-room', data: { room: 'general' } }));
+```
+
+**Available Events:**
+- `ping` - Health check (responds with `pong`)
+- `chat` - Send chat message (broadcasts to all)
+- `broadcast` - Broadcast custom message
+- `join-room` - Join a chat room
+
+**Server Broadcasts:**
+- `notification` - New notification created
+- `chat` - New chat message
+- `user-joined` - User joined a room
+- `room-joined` - Confirmation of room join
 
 ---
 
