@@ -20,8 +20,9 @@ Developed and maintained by **Eclipse Softworks (ES)**, DomainHive Framework eli
 
 ## 🚀 Quick Links for Hackathons
 
-- 🏁 [5-Minute Quick Start](#quick-start-for-hackathons-5-minutes) - Get running NOW
-- 🏆 [Hackathon Guide](./HACKATHON_GUIDE.md) - Copy-paste ready patterns
+- ⚡ [60-Second Minimal Example](./MINIMAL_EXAMPLE.md) - Absolute simplest start
+- 🏁 [5-Minute Quick Start](#quick-start-for-hackathons-5-minutes) - Full featured start
+- 🏆 [Hackathon Guide](./HACKATHON_GUIDE.md) - Copy-paste ready patterns for common projects
 - 💬 [Chat Backend Example](./HACKATHON_GUIDE.md#pattern-2-real-time-chat-application)
 - 🔐 [Auth + API Example](./HACKATHON_GUIDE.md#pattern-1-social-media-backend)
 - 🔔 [Notification System](./HACKATHON_GUIDE.md#pattern-3-notification-system)
@@ -445,8 +446,10 @@ This starts a complete backend with:
 
 ### Documentation
 
+- **[Minimal Example](./MINIMAL_EXAMPLE.md):** ⚡ 60-second absolute minimum setup
 - **[Hackathon Guide](./HACKATHON_GUIDE.md):** 🏆 Copy-paste patterns for common hackathon projects
 - **[Quick Start Guide](./QUICK_START.md):** Get started in 5 minutes
+- **[Deployment Guide](./DEPLOYMENT.md):** 🚀 Deploy to Render, Railway, Heroku, etc.
 - **[Usage Guide](./USAGE_GUIDE.md):** Detailed documentation for all features
 - **[Features List](./FEATURES.md):** Complete feature reference
 - **[Example Projects](./src/examples/):** Working code examples
