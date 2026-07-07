@@ -1,7 +1,7 @@
-import aedes from 'aedes';
+import { Aedes, Client } from 'aedes';
 import net from 'net';
 
-const broker = new aedes();
+const broker = new Aedes();
 const port = 1883;
 const server = net.createServer(broker.handle);
 
@@ -15,8 +15,6 @@ export const brokerReady = new Promise<void>((resolve, reject) => {
     resolve();
   });
 });
-
-import { Client } from 'aedes';
 
 broker.on('client', (client: Client) => {
   console.log('Client connected:', client.id);
